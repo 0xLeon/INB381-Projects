@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <!--<base href="//localhost/INB381/ObjectLoading/" />-->
+        <title>Workshop 3 - Object Loading</title>
+
+        <script id="vertex-shader" type="x-shader/x-vertex">
+            attribute vec4 vPosition;
+
+            void main() {
+                gl_Position = vPosition;
+            }
+        </script>
+        <script id="fragment-shader" type="x-shader/x-fragment">
+            precision mediump float;
+
+            void main() {
+                gl_FragColor = vec4(0.0, 0.5, 1.0, 1.0);
+            }
+        </script>
+        <script type="text/javascript" src="../Common/js/3rd-party/jquery.js"></script>
+        <script type="text/javascript" src="../Common/js/3rd-party/MV.js"></script>
+        <script type="text/javascript" src="../Common/js/WebGLHelper.js"></script>
+        <script type="text/javascript" src="../Common/js/ShaderLoader.js"></script>
+        <script type="text/javascript" src="../Common/js/ObjectLoader.js"></script>
+        <script type="text/javascript" src="./js/objectLoading.js"></script>
+    </head>
+    <body>
+        <canvas width="512" height="512" id="gl-canvas"></canvas>
+    </body>
+</html>
