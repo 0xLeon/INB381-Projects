@@ -40,6 +40,11 @@ var Assignment1 = (function() {
 		rotationMatrix:		null
 	};
 	
+	var buffers = {
+		positionBuffer:		null,
+		colorBuffer:		null
+	};
+	
 	var init = function(_canvas) {
 		canvas = $(_canvas);
 		
@@ -62,12 +67,12 @@ var Assignment1 = (function() {
 			
 			initWebGLContext();
 			loadMeshData();
-			// makeColorData();
+			makeColorData();
 			loadShaders();
 			linkProgram();
-			// loadColor();
-			loadData();
-			bindShaders();
+			locateShadersVariables();
+			initColorBuffer();
+			initMeshBuffer();
 			startWebGL();
 		}
 		catch (e) {
@@ -87,13 +92,15 @@ var Assignment1 = (function() {
 	};
 	
 	var makeColorData = function() {
-		var numvert = meshData.vertices.length / 3;
-		for(var i=0;i<numvert;i++) {
-			colors.push(0.0);
-			//colors.push(0.5+(Math.random()*.5));
-			colors.push(1.0);
-			colors.push(1.0);
-			colors.push(1.0);
+		var numvert = meshData.vertices.length;
+		var randRed = 0;
+		
+		for(var i = 0; i < numvert; i += 3) {
+			randRed = .5 + (Math.random() * .5);
+			
+			Array.prototype.push.apply(colors, [randRed, 0., 0., 1.0]);
+			Array.prototype.push.apply(colors, [randRed, 0., 0., 1.0]);
+			Array.prototype.push.apply(colors, [randRed, 0., 0., 1.0]);
 		}
 	};
 	
@@ -108,35 +115,46 @@ var Assignment1 = (function() {
 		gl.useProgram(program);
 	};
 	
-	var loadData = function() {
-		var bufferID = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, bufferID);
-		gl.bufferData(gl.ARRAY_BUFFER, flatten(meshData.vertices), gl.STATIC_DRAW);
+	var locateShadersVariables = function() {
+		shadersVariables.vPosition = gl.getAttribLocation(program, 'vPosition');
+		shadersVariables.vColor = gl.getAttribLocation(program, 'vColor');
+		shadersVariables.projectionMatrix = gl.getUniformLocation(program, 'projectionMatrix');
+		shadersVariables.translationMatrix = gl.getUniformLocation(program, 'translationMatrix');
+		shadersVariables.rotationMatrix = gl.getUniformLocation(program, 'rotationMatrix');
+		
+		gl.enableVertexAttribArray(shadersVariables.vPosition);
+		gl.enableVertexAttribArray(shadersVariables.vColor);
 	};
 	
-	var loadColor = function() {
-		var cBuffer = gl.createBuffer();
-		gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
-		gl.bufferData( gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
-	}
+	var initMeshBuffer = function() {
+		buffers.positionBuffer = gl.createBuffer();
+		
+		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.positionBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, flatten(meshData.vertices), gl.STATIC_DRAW);
+		
+		buffers.positionBuffer.itemSize = 3;
+		buffers.positionBuffer.numItems = meshData.vertices.length;
+		
+		gl.vertexAttribPointer(shadersVariables.vPosition, buffers.positionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	};
 	
-	var bindShaders = function() {
-		shadersVariables.vPosition = gl.getAttribLocation(program, 'vPosition');
-		gl.vertexAttribPointer(shadersVariables.vPosition, 3, gl.FLOAT, false, 0, 0);
-		gl.enableVertexAttribArray(shadersVariables.vPosition);
+	var initColorBuffer = function() {
+		buffers.colorBuffer = gl.createBuffer();
 		
-		shadersVariables.projectionMatrix = gl.getUniformLocation(program, 'projectionMatrix');
-		gl.uniformMatrix4fv(shadersVariables.projectionMatrix, false, projectionMatrix);
+		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.colorBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 		
-		shadersVariables.translationMatrix = gl.getUniformLocation(program, 'translationMatrix');
-		gl.uniformMatrix4fv(shadersVariables.translationMatrix, false, ob1_translationMatrix);
+		buffers.colorBuffer.itemSize = 4;
+		buffers.colorBuffer.numItems = meshData.vertices.length;
 		
-		shadersVariables.rotationMatrix = gl.getUniformLocation(program, 'rotationMatrix');
-		gl.uniformMatrix4fv(shadersVariables.rotationMatrix, false, rotationMatrix);
-		
-		shadersVariables.vColor = gl.getAttribLocation(program, 'fColor');
-		gl.vertexAttribPointer( shadersVariables.vColor, 4, gl.FLOAT, false, 0, 0 );
-		gl.enableVertexAttribArray(shadersVariables.vColor);
+		gl.vertexAttribPointer(shadersVariables.vColor, buffers.colorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	};
+	
+	var changeColor = function(value, g_factor, b_factor) {
+		for (var i = 2, l = colors.length; i < l; i += 4) {
+			colors[i] = value * g_factor;
+			colors[i - 1] = value * b_factor;
+		}
 	};
 	
 	var startWebGL = function() {
@@ -150,9 +168,20 @@ var Assignment1 = (function() {
 	var render = function() {
 		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 		
+		gl.uniformMatrix4fv(shadersVariables.projectionMatrix, false, projectionMatrix);
+		
+		changeColor((ob1_translationMatrix[12] + 2) / 4, 1, (1 / 3));
+		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.colorBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+		
 		gl.uniformMatrix4fv(shadersVariables.translationMatrix, false, ob1_translationMatrix);
 		gl.uniformMatrix4fv(shadersVariables.rotationMatrix, false, rotationMatrix);
 		gl.drawArrays(gl.TRIANGLES, 0, meshData.vertices.length);
+		
+		
+		changeColor((ob2_translationMatrix[12] + 2) / 4, (1 / 3), 1);
+		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.colorBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 		
 		gl.uniformMatrix4fv(shadersVariables.translationMatrix, false, ob2_translationMatrix);
 		gl.uniformMatrix4fv(shadersVariables.rotationMatrix, false, rotationMatrix);
