@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<!--<base href="//localhost/INB381/Assignment1/" />-->
+		<title>Assignment 1</title>
+		
+		<script type="text/javascript">
+		// <![CDATA[
+			function flatten(v) {
+				var n = v.length * 3;
+				var floats = new Float32Array(n);
+				
+				var idx = 0;
+				for (var i = 0, l = v.length; i < l; i++) {
+					floats[idx++] = v[i][0];
+					floats[idx++] = v[i][1];
+					floats[idx++] = v[i][2];
+				}
+				
+				return floats;
+			}
+		// ]]>
+		</script>
+		<script type="text/javascript" src="../Common/js/3rd-party/jquery.js"></script>
+		<script type="text/javascript" src="../Common/js/3rd-party/gl-matrix.js"></script>
+		<script type="text/javascript" src="../Common/js/WebGLHelper.js"></script>
+		<script type="text/javascript" src="../Common/js/ShaderLoader.js"></script>
+		<script type="text/javascript" src="../Common/js/ObjectLoader.js"></script>
+		<script type="text/javascript" src="./js/assignment1.js"></script>
+		<style type="text/css">
+		/* <![CDATA[ */
+			body {
+				position: relative;
+			}
+		
+			canvas {
+				border: 1px solid black;
+				display: block;
+				margin-left: auto;
+				margin-right: auto;
+			}
+		/* ]]> */
+		</style>
+	</head>
+	<body>
+		<canvas width="768" height="480" id="gl-canvas"></canvas>
+	</body>
+</html>
