@@ -27,7 +27,7 @@ var ObjectLoader = (function() {
 				switch (parts[0]) {
 					case 'v':
 						positions.push(
-							vec3(
+							vec3.fromValues(
 								parseFloat(parts[1]),
 								parseFloat(parts[2]),
 								parseFloat(parts[3])
@@ -36,7 +36,7 @@ var ObjectLoader = (function() {
 						break;
 					case 'vn':
 						normals.push(
-							vec3(
+							vec3.fromValues(
 								parseFloat(parts[1]),
 								parseFloat(parts[2]),
 								parseFloat(parts[3])

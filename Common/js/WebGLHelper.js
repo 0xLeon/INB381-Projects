@@ -34,6 +34,23 @@ var WebGLHelper = (function() {
 		}
 	};
 	
+	var flatten = function(values) {
+		// TODO: only supports arrays of vectors or matrices
+		
+		var fArray = new Float32Array(values.length);
+		
+		if (values instanceof Array) {
+			for (var i = 0, l = values.length; i < l; i++) {
+				if ((values[i] instanceof Array) || (values[0] instanceof glMatrix.ARRAY_TYPE)) {
+					// TODO: recursive call, what about fArray length?
+				}
+				else if (typeof(values[i]) == 'number') {
+					fArray[i] = values[i];
+				}
+			}
+		}
+	};
+	
 	var requestAnimationFrame = (function() {
 		return	window.requestAnimationFrame || 
 			window.mozRequestAnimationFrame ||
