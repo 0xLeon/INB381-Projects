@@ -34,21 +34,77 @@ var WebGLHelper = (function() {
 		}
 	};
 	
-	var flatten = function(values) {
-		// TODO: only supports arrays of vectors or matrices
+	var __flatten = function(values, __targetType) {
+		if (!(values instanceof Array) && !(values instanceof glMatrix.ARRAY_TYPE)) {
+			throw new TypeError('Invalid parameter.');
+		}
 		
-		var fArray = new Float32Array(values.length);
+		var n = values.length;
+		var isArrayOfArrays = false;
+		var innerLength = 1;
+		var fArray = null;
 		
-		if (values instanceof Array) {
-			for (var i = 0, l = values.length; i < l; i++) {
-				if ((values[i] instanceof Array) || (values[0] instanceof glMatrix.ARRAY_TYPE)) {
-					// TODO: recursive call, what about fArray length?
-				}
-				else if (typeof(values[i]) == 'number') {
-					fArray[i] = values[i];
+		if ((values[0] instanceof Array) || (values[0] instanceof glMatrix.ARRAY_TYPE)) {
+			if (typeof(values[0][0]) != 'number') {
+				throw new TypeError();
+			}
+			
+			n *= values[0].length;
+			isArrayOfArrays = true;
+			innerLength = values[0].length;
+		}
+		else if (typeof(values[0]) != 'number') {
+			throw new TypeError();
+		}
+		
+		fArray = new __targetType(n);
+		
+		if (isArrayOfArrays) {
+			for (var i = 0, l = values.length, idx = 0; i < l; ++i) {
+				for (var j = 0; j < innerLength; ++j) {
+					fArray[idx++] = values[i][j];
 				}
 			}
 		}
+		else {
+			for (var i = 0; i < n; ++i) {
+				fArray[i] = values[i];
+			}
+		}
+		
+		return fArray;
+	};
+	
+	var flattenf32 = function(values) {
+		return __flatten(values, Float32Array);
+	};
+	
+	var flattenf64 = function(values) {
+		return __flatten(values, Float64Array);
+	};
+	
+	var flatteni8 = function(values) {
+		return __flatten(values, Int8Array);
+	};
+	
+	var flattenui8 = function(values) {
+		return __flatten(values, Uint8Array);
+	};
+	
+	var flatteni16 = function(values) {
+		return __flatten(values, Int16Array);
+	};
+	
+	var flattenui16 = function(values) {
+		return __flatten(values, Uint16Array);
+	};
+	
+	var flatteni32 = function(values) {
+		return __flatten(values, Int32Array);
+	};
+	
+	var flattenui32 = function(values) {
+		return __flatten(values, Uint32Array);
 	};
 	
 	var requestAnimationFrame = (function() {
@@ -65,5 +121,13 @@ var WebGLHelper = (function() {
 	return {
 		createContext:		createContext,
 		requestAnimationFrame:	requestAnimationFrame
+		flattenf32:		flattenf32,
+		flattenf64:		flattenf64,
+		flatteni8:		flatteni8,
+		flattenui8:		flattenui8,
+		flatteni16:		flatteni16,
+		flattenui16:		flattenui16,
+		flatteni32:		flatteni32,
+		flattenui32:		flattenui32,
 	};
 })();
