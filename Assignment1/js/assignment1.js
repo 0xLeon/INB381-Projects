@@ -1,47 +1,42 @@
 var Assignment1 = (function() {
 	var canvas = null;
 	var gl = null;
-	var meshData = null;
+	var monkeyObj = null;
 	var vertShader = null;
 	var fragShader = null;
 	var program = null;
 	var colors = [];
 	var projectionMatrix = mat4.create();
-	var rotationAxis = vec3.fromValues(0, 1, 0);
-	var rotationMatrix = mat4.create();
 	
-	var ob1_translationMatrix = mat4.create();
-	var ob1_startPoint = vec3.fromValues(-2, 1, 0);
-	var ob1_endFromStartPoint = vec3.fromValues(2, 0, 0);
-	var ob1_endPoint = vec3.create();
-	var ob1_x_speed = 0.01;
-	var ob1_x_direction = 1;
-	var ob1_current_x = 0;
-	var ob1_y_speed = 0;
-	var ob1_current_y = 0;
-	var ob1_y_direction = 1;
+	var obj1 = {
+		direction:	-1,
+		startPos:	vec3.fromValues(-4, -2, 0),
+		endTrans:	vec3.fromValues(4, -2, 0),
+		rotation:	vec3.fromValues(0, 0, 0),
+		t:		0
+	};
 	
-	var ob2_translationMatrix = mat4.create();
-	var ob2_startPoint = vec3.fromValues(-2, -1, 0);
-	var ob2_endFromStartPoint = vec3.fromValues(2, 0, 0);
-	var ob2_endPoint = vec3.create();
-	var ob2_x_speed = 0.02;
-	var ob2_x_direction = 1;
-	var ob2_current_x = 0;
-	var ob2_y_speed = 0;
-	var ob2_current_y = 0;
-	var ob2_y_direction = 1;
+	var obj2 = {
+		direction:	1,
+		startPos:	vec3.fromValues(4, 2, 0),
+		endTrans:	vec3.fromValues(-4, 2, 0),
+		rotation:	vec3.fromValues(0, 0, 0),
+		t:		500
+	};
 	
 	var shadersVariables = {
 		vPosition:		null,
 		vColor:			null,
 		projectionMatrix:	null,
-		translationMatrix:	null,
-		rotationMatrix:		null
+		rotation:		null,
+		startPos:		null,
+		trans:			null,
+		t:			null,
+		gFactor:		null,
+		bFactor:		null
 	};
 	
 	var buffers = {
-		positionBuffer:		null,
 		colorBuffer:		null
 	};
 	
@@ -52,18 +47,7 @@ var Assignment1 = (function() {
 			gl = WebGLHelper.createContext(canvas, {});
 			
 			mat4.perspective(projectionMatrix, Math.PI / 4, canvas.get(0).width / canvas.get(0).height, 1, 100000);
-			mat4.translate(projectionMatrix, projectionMatrix, vec3.fromValues(0, 0, -5));
-			
-			vec3.normalize(rotationAxis, rotationAxis);
-			
-			vec3.add(ob1_endPoint, ob1_startPoint, ob1_endFromStartPoint);
-			vec3.add(ob2_endPoint, ob2_startPoint, ob2_endFromStartPoint);
-			
-			mat4.identity(ob1_translationMatrix);
-			mat4.translate(ob1_translationMatrix, ob1_translationMatrix, ob1_startPoint);
-			
-			mat4.identity(ob2_translationMatrix);
-			mat4.translate(ob2_translationMatrix, ob2_translationMatrix, ob2_startPoint);
+			mat4.translate(projectionMatrix, projectionMatrix, vec3.fromValues(0, 0, -8));
 			
 			initWebGLContext();
 			loadMeshData();
@@ -88,14 +72,14 @@ var Assignment1 = (function() {
 	};
 	
 	var loadMeshData = function() {
-		meshData = ObjectLoader.loadObjDataFromHttp('./obj/Monkey.obj');
+		monkeyObj = new WebGLGraphicsObject(gl, ObjectLoader.loadObjDataFromHttp('./obj/Monkey.obj'));
 	};
 	
 	var makeColorData = function() {
-		var numvert = meshData.vertices.length;
+		var numvert = monkeyObj.meshData.vertexIndices.length * 3;
 		var randRed = 0;
 		
-		for(var i = 0; i < numvert; i += 3) {
+		for (var i = 0; i < numvert; i += 3) {
 			randRed = .5 + (Math.random() * .5);
 			
 			Array.prototype.push.apply(colors, [randRed, 0., 0., 1.0]);
@@ -119,23 +103,22 @@ var Assignment1 = (function() {
 		shadersVariables.vPosition = gl.getAttribLocation(program, 'vPosition');
 		shadersVariables.vColor = gl.getAttribLocation(program, 'vColor');
 		shadersVariables.projectionMatrix = gl.getUniformLocation(program, 'projectionMatrix');
-		shadersVariables.translationMatrix = gl.getUniformLocation(program, 'translationMatrix');
-		shadersVariables.rotationMatrix = gl.getUniformLocation(program, 'rotationMatrix');
+		
+		shadersVariables.rotation = gl.getUniformLocation(program, 'rotation');
+		shadersVariables.startPos = gl.getUniformLocation(program, 'startPos');
+		shadersVariables.trans = gl.getUniformLocation(program, 'trans');
+		shadersVariables.t = gl.getUniformLocation(program, 't');
+		
+		shadersVariables.gFactor = gl.getUniformLocation(program, 'gFactor');
+		shadersVariables.bFactor = gl.getUniformLocation(program, 'bFactor');
 		
 		gl.enableVertexAttribArray(shadersVariables.vPosition);
 		gl.enableVertexAttribArray(shadersVariables.vColor);
 	};
 	
 	var initMeshBuffer = function() {
-		buffers.positionBuffer = gl.createBuffer();
-		
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.positionBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, flatten(meshData.vertices), gl.STATIC_DRAW);
-		
-		buffers.positionBuffer.itemSize = 3;
-		buffers.positionBuffer.numItems = meshData.vertices.length;
-		
-		gl.vertexAttribPointer(shadersVariables.vPosition, buffers.positionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+		gl.bindBuffer(gl.ARRAY_BUFFER, monkeyObj.buffers.verticesBuffer);
+		gl.vertexAttribPointer(shadersVariables.vPosition, 3, gl.FLOAT, false, 0, 0);
 	};
 	
 	var initColorBuffer = function() {
@@ -145,80 +128,80 @@ var Assignment1 = (function() {
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 		
 		buffers.colorBuffer.itemSize = 4;
-		buffers.colorBuffer.numItems = meshData.vertices.length;
+		buffers.colorBuffer.numItems = monkeyObj.meshData.vertexIndices.length;
 		
 		gl.vertexAttribPointer(shadersVariables.vColor, buffers.colorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 	};
 	
-	var changeColor = function(value, g_factor, b_factor) {
-		for (var i = 2, l = colors.length; i < l; i += 4) {
-			colors[i] = value * g_factor;
-			colors[i - 1] = value * b_factor;
-		}
-	};
-	
 	var startWebGL = function() {
-		/*WebGLHelper.*/requestAnimationFrame(function() {
+		gl.uniformMatrix4fv(shadersVariables.projectionMatrix, false, projectionMatrix);
+		
+		window[WebGLHelper.requestAnimationFrame](function () {
 			render();
 		});
 	};
 	
 	var currentTime = Date.now();
-	var currentLocation = vec3.create();
 	var render = function() {
 		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 		
-		gl.uniformMatrix4fv(shadersVariables.projectionMatrix, false, projectionMatrix);
+		// draw
+		gl.uniform3fv(shadersVariables.startPos, obj1.startPos);
+		gl.uniform3fv(shadersVariables.trans, obj1.endTrans);
+		gl.uniform1f(shadersVariables.t, obj1.t);
+		gl.uniform3fv(shadersVariables.rotation, obj1.rotation);
+		gl.uniform1f(shadersVariables.gFactor, 1.0);
+		gl.uniform1f(shadersVariables.bFactor, 1.0 / 3.0);
+		gl.bindBuffer(gl.ARRAY_BUFFER, monkeyObj.buffers.verticesBuffer);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, monkeyObj.buffers.vertexIndicesBuffer);
+		gl.drawElements(gl.TRIANGLES, monkeyObj.meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
 		
-		changeColor((ob1_translationMatrix[12] + 2) / 4, 1, (1 / 3));
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.colorBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+		gl.uniform3fv(shadersVariables.startPos, obj2.startPos);
+		gl.uniform3fv(shadersVariables.trans, obj2.endTrans);
+		gl.uniform1f(shadersVariables.t, obj2.t);
+		gl.uniform3fv(shadersVariables.rotation, obj2.rotation);
+		gl.uniform1f(shadersVariables.gFactor, 1.0 / 3.0);
+		gl.uniform1f(shadersVariables.bFactor, 1.0);
+		gl.bindBuffer(gl.ARRAY_BUFFER, monkeyObj.buffers.verticesBuffer);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, monkeyObj.buffers.vertexIndicesBuffer);
+		gl.drawElements(gl.TRIANGLES, monkeyObj.meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
 		
-		gl.uniformMatrix4fv(shadersVariables.translationMatrix, false, ob1_translationMatrix);
-		gl.uniformMatrix4fv(shadersVariables.rotationMatrix, false, rotationMatrix);
-		gl.drawArrays(gl.TRIANGLES, 0, meshData.vertices.length);
+		// animate
+		obj1.t += obj1.direction * 2;
 		
+		if (obj1.t > 1000) {
+			obj1.t = 1000;
+			obj1.direction *= -1;
+		}
+		else if (obj1.t < 0) {
+			obj1.t = 0;
+			obj1.direction *= -1;
+		}
 		
-		changeColor((ob2_translationMatrix[12] + 2) / 4, (1 / 3), 1);
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.colorBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+		obj2.t += obj2.direction * 3;
 		
-		gl.uniformMatrix4fv(shadersVariables.translationMatrix, false, ob2_translationMatrix);
-		gl.uniformMatrix4fv(shadersVariables.rotationMatrix, false, rotationMatrix);
-		gl.drawArrays(gl.TRIANGLES, 0, meshData.vertices.length);
+		if (obj2.t > 1000) {
+			obj2.t = 1000;
+			obj2.direction *= -1;
+		}
+		else if (obj2.t < 0) {
+			obj2.t = 0;
+			obj2.direction *= -1;
+		}
 		
-		/*WebGLHelper.*/requestAnimationFrame(function() {
-			// animate
-			// TODO: animate translation
-			mat4.translate(ob1_translationMatrix, ob1_translationMatrix, vec3.fromValues(ob1_x_direction * ob1_x_speed, ob1_y_direction * ob1_y_speed, 0));
-			mat4.translate(ob2_translationMatrix, ob2_translationMatrix, vec3.fromValues(ob2_x_direction * ob2_x_speed, ob2_y_direction * ob2_y_speed, 0));
-			
-			if (((ob1_translationMatrix[12] >= ob1_endPoint[0]) ) || (ob1_translationMatrix[12] <= ob1_startPoint[0])) {
-				ob1_x_direction *= -1;
-			}
-			
-			if ((ob1_translationMatrix[13] >= ob1_endPoint[1]) || (ob1_translationMatrix[13] <= ob1_startPoint[1])) {
-				ob1_y_direction *= -1;
-			}
-			
-			if (((ob2_translationMatrix[12] >= ob2_endPoint[0]) ) || (ob2_translationMatrix[12] <= ob2_startPoint[0])) {
-				ob2_x_direction *= -1;
-			}
-			
-			if ((ob2_translationMatrix[13] >= ob2_endPoint[1]) || (ob2_translationMatrix[13] <= ob2_startPoint[1])) {
-				ob2_y_direction *= -1;
-			}
-			
-			
-			var now = Date.now();
-			var deltat = now - currentTime;
-			currentTime = now;
-			var fract = deltat / 5000;
-			var angle = Math.PI * 2 * fract;
-			mat4.rotate(rotationMatrix, rotationMatrix, angle, rotationAxis);
-			
+		var now = Date.now();
+		var deltat = now - currentTime;
+		currentTime = now;
+		var fract = deltat / 5000;
+		var angle = 360 * fract;
+		
+		obj1.rotation[1] = (obj1.rotation[1] + angle) % 360;
+		obj2.rotation[1] = (obj2.rotation[1] + angle) % 360;
+		
+		// schedule next render
+		window[WebGLHelper.requestAnimationFrame](function () {
 			render();
-		})
+		});
 	};
 	
 	return {
