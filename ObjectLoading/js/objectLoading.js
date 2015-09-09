@@ -10,6 +10,9 @@ var ObjectLoading = (function() {
 		vPosition:	null
 	};
 	
+	var vertBuffer = null;
+	var vertIndexBuffer = null;
+	
 	var init = function(_canvas) {
 		canvas = $(_canvas);
 		
@@ -51,15 +54,19 @@ var ObjectLoading = (function() {
 	};
 	
 	var loadData = function() {
-		var bufferID = gl.createBuffer();
+		vertBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, WebGLHelper.flattenf32(meshData.vertices), gl.STATIC_DRAW);
 		
-		gl.bindBuffer(gl.ARRAY_BUFFER, bufferID);
-		gl.bufferData(gl.ARRAY_BUFFER, flatten(meshData.vertices), gl.STATIC_DRAW);
+		vertIndexBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vertIndexBuffer);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, WebGLHelper.flattenui16(meshData.vertexIndices), gl.STATIC_DRAW);
 	};
 	
 	var bindShaders = function() {
 		shadersVariables.vPosition = gl.getAttribLocation(program, 'vPosition');
 		
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
 		gl.vertexAttribPointer(shadersVariables.vPosition, 3, gl.FLOAT, false, 0, 0);
 		gl.enableVertexAttribArray(shadersVariables.vPosition);
 	};
@@ -70,7 +77,7 @@ var ObjectLoading = (function() {
 	
 	var render = function() {
 		gl.clear(gl.COLOR_BUFFER_BIT);
-		gl.drawArrays(gl.LINES, 0, meshData.vertices.length);
+		gl.drawElements(gl.LINES, meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
 	};
 	
 	return {
