@@ -11,9 +11,10 @@ var ObjectLoader = (function() {
 		
 		var lines = objData.trim().split("\n");
 		var parts = null;
-		var positions = [];
-		var normals = [];
 		var vertices = [];
+		var normals = [];
+		var vertexIndices = [];
+		var normalIndices = [];
 		var f1 = null;
 		var f2 = null;
 		var f3 = null;
@@ -26,7 +27,7 @@ var ObjectLoader = (function() {
 			if (parts.length > 0) {
 				switch (parts[0]) {
 					case 'v':
-						positions.push(
+						vertices.push(
 							vec3.fromValues(
 								parseFloat(parts[1]),
 								parseFloat(parts[2]),
@@ -48,25 +49,28 @@ var ObjectLoader = (function() {
 						f2 = parts[2].split('/');
 						f3 = parts[3].split('/');
 						
-						vertices.push(positions[parseInt(f1[0]) - 1]);
-						// vertices.push(normals[parseInt(f1[2]) - 1]);
-						vertices.push(positions[parseInt(f2[0]) - 1]);
-						// vertices.push(normals[parseInt(f2[2]) - 1]);
-						vertices.push(positions[parseInt(f3[0]) - 1]);
-						// vertices.push(normals[parseInt(f3[2]) - 1]);
+						vertexIndices.push([
+							(parseInt(f1[0]) - 1),
+							(parseInt(f2[0]) - 1),
+							(parseInt(f3[0]) - 1)
+						]);
+						normalIndices.push([
+							(parseInt(f1[2]) - 1),
+							(parseInt(f2[2]) - 1),
+							(parseInt(f3[2]) - 1)
+						]);
 						
-						// arrayPush.apply(vertices, positions[parseInt(f1[0]) - 1]);
-						// arrayPush.apply(vertices, positions[parseInt(f2[0]) - 1]);
-						// arrayPush.apply(vertices, positions[parseInt(f3[0]) - 1]);
 						break;
 				}
 			}
 		}
 		
 		return {
-			primitiveType:	'TRIANGLES',
+			primitiveType:	WebGLRenderingContext.TRIANGLES,
 			vertices:	vertices,
-			// vertexCount:	vertices.length / 6,
+			normals:	normals,
+			vertexIndices:	vertexIndices,
+			normalIndices:	normalIndices,
 			material:	{
 				ambient:	0.2,
 				diffuse:	0.5,
