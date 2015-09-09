@@ -107,20 +107,19 @@ var WebGLHelper = (function() {
 		return __flatten(values, Uint32Array);
 	};
 	
-	var requestAnimationFrame = (function() {
+	var requestAnimFrame = (function() {
 		return	window.requestAnimationFrame || 
 			window.mozRequestAnimationFrame ||
 			window.webkitRequestAnimationFrame ||
 			window.msRequestAnimationFrame ||
 			window.oRequestAnimationFrame ||
-			(function (callback) {
+			(window.webglHelperRequestAnimationFrame = function webglHelperRequestAnimationFrame(callback) {
 				window.setTimeout(callback, 1000 / 60);
 			});
 	})();
 	
 	return {
 		createContext:		createContext,
-		requestAnimationFrame:	requestAnimationFrame
 		flattenf32:		flattenf32,
 		flattenf64:		flattenf64,
 		flatteni8:		flatteni8,
@@ -129,5 +128,6 @@ var WebGLHelper = (function() {
 		flattenui16:		flattenui16,
 		flatteni32:		flatteni32,
 		flattenui32:		flattenui32,
+		requestAnimationFrame:	/^function\s+([\w\$]+)\s*\(/.exec(requestAnimFrame.toString())[1]
 	};
 })();
