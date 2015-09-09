@@ -37,10 +37,10 @@ var Triangle = (function() {
 	
 	var loadMeshData = function() {
 		meshData = [
-			vec2(-0.5, -0.5),
-			vec2(-0.5, 0.5),
-			vec2(0.5, -0.5),
-			vec2(0.5, 0.5)
+			vec2.fromValues(-0.5, -0.5),
+			vec2.fromValues(-0.5, 0.5),
+			vec2.fromValues(0.5, -0.5),
+			vec2.fromValues(0.5, 0.5)
 		];
 	};
 	
@@ -59,7 +59,7 @@ var Triangle = (function() {
 		var bufferID = gl.createBuffer();
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, bufferID);
-		gl.bufferData(gl.ARRAY_BUFFER, flatten(meshData), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, WebGLHelper.flattenf32(meshData), gl.STATIC_DRAW);
 	};
 	
 	var bindShaders = function() {
