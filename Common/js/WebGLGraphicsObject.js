@@ -9,8 +9,6 @@ var WebGLGraphicsObject = (function() {
 			normalIndicesBuffer:	null
 		};
 		
-		console.log(this);
-		
 		__createBuffers.apply(this, null);
 		__bindData.apply(this, null);
 	};
