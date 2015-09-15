@@ -48,14 +48,12 @@ void main() {
 			0.0, 0.0, 0.0, 1.0
 		);
 		
-		float s1tFrac = s1t / 1000.0;
-		vec3 s1Pos = ((1.0 - s1tFrac) * s1start) + (s1tFrac * s1end);
 		
-		float s2tFrac = s2t / 1000.0;
-		vec3 s2Pos = ((1.0 - s2tFrac) * s2start) + (s2tFrac * s2end);
+		vec3 s1pos = mix(s1start, s1end, s1t / 1000.0);
+		vec3 s2pos = mix(s2start, s2end, s2t / 1000.0);
 		
 		float tFrac = t / 1000.0;
-		vec3 translation = ((1.0 - tFrac) * s1Pos) + (tFrac * s2Pos);
+		vec3 translation = mix(s1pos, s2pos, tFrac);
 		
 		mat4 transMat = mat4(
 			1.0, 0.0, 0.0, 0.0,
@@ -70,7 +68,7 @@ void main() {
 	}
 	else {
 		float tFrac = t / 1000.0;
-		vec3 translation = ((1.0 - tFrac) * sphereTransStart) + (tFrac * sphereTransEnd);
+		vec3 translation = mix(sphereTransStart, sphereTransEnd, tFrac);
 		
 		mat4 transMat = mat4(
 			1.0, 0.0, 0.0, 0.0,
