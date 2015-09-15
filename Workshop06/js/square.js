@@ -1,7 +1,6 @@
 var canvas;
 var gl;
 
-
 var maxNumTriangles = 200;
 var maxNumVertices = 3 * maxNumTriangles;
 var index = 0;
@@ -15,7 +14,6 @@ var colors = [
 	vec4(1.0, 0.0, 1.0, 1.0),  // magenta
 	vec4(0.0, 1.0, 1.0, 1.0)   // cyan
 ];
-
 
 window.onload = function init() {
 	canvas = document.getElementById("gl-canvas");
@@ -68,8 +66,7 @@ window.onload = function init() {
 	
 	render();
 	
-}
-
+};
 
 function render() {
 	

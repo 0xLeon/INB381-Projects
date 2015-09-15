@@ -1,4 +1,8 @@
 var canvas;
+
+/**
+ * @type	{WebGLRenderingContext}
+ */
 var gl;
 
 var NumVertices = 36;
@@ -21,7 +25,7 @@ var translateOffsetLoc;
 window.onload = function init() {
 	canvas = document.getElementById("gl-canvas");
 	
-	gl = WebGLUtils.setupWebGL(canvas);
+	gl = WebGLUtils.setupWebGL(canvas, {});
 	if (!gl) {
 		alert("WebGL isn't available");
 	}
@@ -126,7 +130,6 @@ function quad(a, b, c, d) {
 		
 		// for solid colored faces use 
 		//colors.push(vertexColors[a]);
-		
 	}
 }
 

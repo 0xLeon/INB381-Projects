@@ -1,44 +1,37 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
-<title>Workshop 5 Exercise 1</title>
-
-
-<script id="vertex-shader" type="x-shader/x-vertex">
-attribute vec3 vPosition;
-attribute vec3 vColor;
-varying vec4 color;
-
-void
-main()
-{
-    gl_Position = vec4(vPosition, 1.0);
-    color = vec4(vColor, 1.0);
-}
-</script>
-
-<script id="fragment-shader" type="x-shader/x-fragment">
-precision mediump float;
-   
-varying vec4 color;
-
-void
-main()
-{
-    gl_FragColor = color;
-}
-</script>
-
-<script type="text/javascript" src="common/webgl-utils.js"></script>
-<script type="text/javascript" src="common/initShaders.js"></script>
-<script type="text/javascript" src="common/MV.js"></script>
-<script type="text/javascript" src="js/workshop5ex1.js"></script>
-</head>   
-
-<body>
-<canvas id="gl-canvas" width="512" height="512">
-Oops ... your browser doesn't support the HTML5 canvas element
-</canvas>
-</body>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Exercise 1 - Workshop 5</title>
+		
+		<script id="vertex-shader" type="x-shader/x-vertex">
+			attribute vec3 vPosition;
+			attribute vec3 vColor;
+			varying vec4 color;
+			
+			void main() {
+				gl_Position = vec4(vPosition, 1.0);
+				color = vec4(vColor, 1.0);
+			}
+		</script>
+		<script id="fragment-shader" type="x-shader/x-fragment">
+			precision mediump float;
+			
+			varying vec4 color;
+			
+			void main() {
+				gl_FragColor = color;
+			}
+		</script>
+		
+		<script type="text/javascript" src="../Common/js/3rd-party/deprecated/webgl-utils.js"></script>
+		<script type="text/javascript" src="../Common/js/3rd-party/deprecated/initShaders.js"></script>
+		<script type="text/javascript" src="../Common/js/3rd-party/deprecated/MV.js"></script>
+		<script type="text/javascript" src="./js/workshop5ex1.js"></script>
+	</head>
+	<body>
+		<canvas id="gl-canvas" width="512" height="512">
+			Oops ... your browser doesn't support the HTML5 canvas element
+		</canvas>
+	</body>
 </html>

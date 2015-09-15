@@ -55,8 +55,6 @@ var light = vec3(0.0, -2.0, 0.0);
 var m = mat4();
 var black = flatten(vec4(0.0, 0.0, 0.0, 1.0));
 var white = flatten(vec4(1.0, 1.0, 1.0, 1.0));
-var offsetZero = flatten(vec4(0.0, 0.0, 0.0, 0.0));
-var offsetOne = flatten(vec4(0.0, -1.0, 0.0, 0.0));
 
 function quad(a, b, c, d) {
 	pointsArray.push(vertices[a]);
@@ -135,25 +133,25 @@ window.onload = function init() {
 
 	// sliders for viewing parameters
 	
-	document.getElementById("zFarSlider").onchange = function (event) {
+	document.getElementById("zFarSlider").onchange = function(event) {
 		far = event.target.value;
 	};
-	document.getElementById("zNearSlider").onchange = function (event) {
+	document.getElementById("zNearSlider").onchange = function(event) {
 		near = event.target.value;
 	};
-	document.getElementById("radiusSlider").onchange = function (event) {
+	document.getElementById("radiusSlider").onchange = function(event) {
 		radius = event.target.value;
 	};
-	document.getElementById("thetaSlider").onchange = function (event) {
+	document.getElementById("thetaSlider").onchange = function(event) {
 		theta = event.target.value * Math.PI / 180.0;
 	};
-	document.getElementById("phiSlider").onchange = function (event) {
+	document.getElementById("phiSlider").onchange = function(event) {
 		phi = event.target.value * Math.PI / 180.0;
 	};
-	document.getElementById("aspectSlider").onchange = function (event) {
+	document.getElementById("aspectSlider").onchange = function(event) {
 		aspect = event.target.value;
 	};
-	document.getElementById("fovSlider").onchange = function (event) {
+	document.getElementById("fovSlider").onchange = function(event) {
 		fovy = event.target.value;
 	};
 	
@@ -161,7 +159,7 @@ window.onload = function init() {
 };
 
 
-var render = function () {
+var render = function() {
 	
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	

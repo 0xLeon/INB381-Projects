@@ -1,10 +1,9 @@
 /**
  * Created by mvandeberg on 25/08/15.
  */
-
 function main() {
 	// Get A WebGL context
-	gl = WebGLUtils.setupWebGL(canvas);
+	gl = WebGLUtils.setupWebGL(canvas, {});
 	if (!gl) {
 		alert("WebGL isn't available");
 	}
