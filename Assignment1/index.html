@@ -16,10 +16,11 @@
 		/* <![CDATA[ */
 			body {
 				position: relative;
+				background-color: #aaa;
 			}
 		
 			canvas {
-				border: 1px solid black;
+				border: 20px solid black;
 				float: left;
 				margin-top: 11px;
 			}
@@ -30,53 +31,81 @@
 				min-width: 210px;
 			}
 			
-			fieldset > p {
+			fieldset > label {
 				display: inline-block;
 				min-width: 20px;
 				height: 12px;
 				font-size: 12px;
 			}
+			
+			.monkey-control {
+				display: none;
+				visibility: hidden;
+			}
 		/* ]]> */
 		</style>
 	</head>
 	<body>
-		<div>
-			<canvas width="768" height="480" id="gl-canvas"></canvas>
-			<fieldset>
-				<legend>Monkey 1</legend>
-				<button type="button" id="monkey1-up">Speed Up</button>
-				<button type="button" id="monkey1-down">Slow Down</button>
-			</fieldset>
-			<br />
-			<fieldset>
-				<legend>Monkey 2</legend>
-				<button type="button" id="monkey2-up">Speed Up</button>
-				<button type="button" id="monkey2-down">Slow Down</button>
-			</fieldset>
-			<br />
-			<fieldset>
-				<legend>Sphere 1</legend>
-				<p id="sphere1-pos-val"></p>
-				<input type="range" id="sphere1-pos" min="0" max="1000" step="1" value="0" />
-			</fieldset>
-			<br />
-			<fieldset>
-				<legend>Sphere 2</legend>
-				<p id="sphere2-pos-val"></p>
-				<input type="range" id="sphere2-pos" min="0" max="1000" step="1" value="0" />
-			</fieldset>
-			<br />
-			<fieldset>
-				<legend>Sphere 3</legend>
-				<p id="sphere3-pos-val"></p>
-				<input type="range" id="sphere3-pos" min="0" max="1000" step="1" value="0" />
-			</fieldset>
-			<br />
-			<fieldset>
-				<legend>Sphere 4</legend>
-				<p id="sphere4-pos-val"></p>
-				<input type="range" id="sphere4-pos" min="0" max="1000" step="1" value="0" />
-			</fieldset>
+		<div id="main">
+			<canvas width="768" height="480" id="gl-canvas">
+				Canvas element not supported.
+			</canvas>
+			<div>
+				<fieldset>
+					<legend>Statistics</legend>
+					<span><span id="fps-value">0</span> fps</span>
+					<script type="text/javascript">
+					// <![CDATA[
+						var $fpsValue = $('#fps-value');
+						window.setInterval(function() {
+							$fpsValue.text(Assignment1.getFps());
+						}, 1000);
+					// ]]>
+					</script>
+				</fieldset>
+			</div>
+			<div>
+				<fieldset class="monkey-control">
+					<legend>Monkey 1</legend>
+					<button type="button" id="monkey1-up">Speed Up</button>
+					<button type="button" id="monkey1-down">Slow Down</button>
+				</fieldset>
+			</div>
+			<div>
+				<fieldset class="monkey-control">
+					<legend>Monkey 2</legend>
+					<button type="button" id="monkey2-up">Speed Up</button>
+					<button type="button" id="monkey2-down">Slow Down</button>
+				</fieldset>
+			</div>
+			<div>
+				<fieldset>
+					<legend>Sphere 1</legend>
+					<label id="sphere1-pos-val" for="sphere1-pos"></label>
+					<input type="range" id="sphere1-pos" min="0" max="1000" step="1" value="0" />
+				</fieldset>
+			</div>
+			<div>
+				<fieldset>
+					<legend>Sphere 2</legend>
+					<label id="sphere2-pos-val" for="sphere2-pos"></label>
+					<input type="range" id="sphere2-pos" min="0" max="1000" step="1" value="0" />
+				</fieldset>
+			</div>
+			<div>
+				<fieldset>
+					<legend>Sphere 3</legend>
+					<label id="sphere3-pos-val" for="sphere3-pos"></label>
+					<input type="range" id="sphere3-pos" min="0" max="1000" step="1" value="0" />
+				</fieldset>
+			</div>
+			<div>
+				<fieldset>
+					<legend>Sphere 4</legend>
+					<label id="sphere4-pos-val" for="sphere4-pos"></label>
+					<input type="range" id="sphere4-pos" min="0" max="1000" step="1" value="0" />
+				</fieldset>
+			</div>
 		</div>
 	</body>
 </html>
