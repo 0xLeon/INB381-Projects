@@ -17,6 +17,8 @@ uniform float s1t;
 uniform vec3 s2start;
 uniform vec3 s2end;
 uniform float s2t;
+uniform float sinAmplitude;
+uniform float sinFrequency;
 
 uniform vec3 sphereTransStart;
 uniform vec3 sphereTransEnd;
@@ -25,6 +27,8 @@ uniform int doPickingRender;
 uniform ivec3 pickingColor;
 
 varying vec4 fColor;
+
+const float PI = 3.141592653589793238462643383;
 
 void main() {
 	if (1 == isMonkey) {
@@ -65,6 +69,8 @@ void main() {
 		
 		float tFrac = t / 1000.0;
 		vec3 translation = mix(s1pos, s2pos, tFrac);
+		
+		translation.y += sinAmplitude * sin(sinFrequency * tFrac * 2.0 * PI);
 		
 		mat4 transMat = mat4(
 			1.0, 0.0, 0.0, 0.0,
