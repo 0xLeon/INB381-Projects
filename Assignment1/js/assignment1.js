@@ -134,8 +134,7 @@ var Assignment1 = (function() {
 		dragging: {
 			active:		false,
 			element:	null
-		},
-		mouseEvents:		[]
+		}
 	};
 	
 	var lastTime = window.performance.now();
@@ -150,7 +149,6 @@ var Assignment1 = (function() {
 		canvas = $(_canvas);
 		
 		canvas.on('mousedown', function(event) {
-			// mouseState.mouseEvents.push(event);
 			mouseState.currentPosition.x = event.pageX - $(this).offset().left - (parseInt($(this).css('borderLeftWidth'), 10) || 0) - (parseInt($(this).css('paddingLeft'), 10) || 0);
 			mouseState.currentPosition.y = event.pageY - $(this).offset().top - (parseInt($(this).css('borderTopWidth'), 10) || 0) - (parseInt($(this).css('paddingTop'), 10) || 0);
 			
