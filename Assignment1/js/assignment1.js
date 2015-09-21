@@ -1,5 +1,5 @@
 var Assignment1 = (function() {
-	var canvas = null;
+	var $canvas = null;
 	var gl = null;
 	
 	var projectionMatrix = mat4.create();
@@ -174,11 +174,11 @@ var Assignment1 = (function() {
 	var enableSound = true;
 	
 	
-	var init = function(_canvas) {
-		canvas = $(_canvas);
+	var init = function(canvas) {
+		$canvas = $(canvas);
 		
 		try {
-			gl = WebGLHelper.createContext(canvas, {});
+			gl = WebGLHelper.createContext($canvas, {});
 			
 			initViewMatrices();
 			
@@ -210,7 +210,7 @@ var Assignment1 = (function() {
 	
 	
 	var initViewMatrices = function() {
-		mat4.perspective(projectionMatrix, Math.PI / 4, canvas.get(0).width / canvas.get(0).height, 1, 100000);
+		mat4.perspective(projectionMatrix, Math.PI / 4, $canvas.get(0).width / $canvas.get(0).height, 1, 100000);
 		mat4.lookAt(viewMatrix, vec3.fromValues(0, 0, -8), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
 		mat4.multiply(finalViewMatrix, projectionMatrix, viewMatrix);
 	};
@@ -302,11 +302,11 @@ var Assignment1 = (function() {
 	};
 	
 	var initDragging = function() {
-		canvas.on('mousedown', function(event) {
+		$canvas.on('mousedown', function(event) {
 			mouseState.currentPosition.x = event.pageX - $(this).offset().left - (parseInt($(this).css('borderLeftWidth'), 10) || 0) - (parseInt($(this).css('paddingLeft'), 10) || 0);
 			mouseState.currentPosition.y = event.pageY - $(this).offset().top - (parseInt($(this).css('borderTopWidth'), 10) || 0) - (parseInt($(this).css('paddingTop'), 10) || 0);
 			
-			if ((mouseState.currentPosition.x >= 0) && (mouseState.currentPosition.y >= 0) && (mouseState.currentPosition.x < canvas.get(0).width) && (mouseState.currentPosition.y < canvas.get(0).height)) {
+			if ((mouseState.currentPosition.x >= 0) && (mouseState.currentPosition.y >= 0) && (mouseState.currentPosition.x < $canvas.get(0).width) && (mouseState.currentPosition.y < $canvas.get(0).height)) {
 				picking.doPicking = true;
 			}
 		});
@@ -315,8 +315,8 @@ var Assignment1 = (function() {
 			mouseState.dragging.element = null;
 		});
 		$(document).on('mousemove', function(event) {
-			mouseState.currentPosition.x = event.pageX - canvas.offset().left - (parseInt(canvas.css('borderLeftWidth'), 10) || 0) - (parseInt(canvas.css('paddingLeft'), 10) || 0);
-			mouseState.currentPosition.y = event.pageY - canvas.offset().top - (parseInt(canvas.css('borderTopWidth'), 10) || 0) - (parseInt(canvas.css('paddingTop'), 10) || 0);
+			mouseState.currentPosition.x = event.pageX - $canvas.offset().left - (parseInt($canvas.css('borderLeftWidth'), 10) || 0) - (parseInt($canvas.css('paddingLeft'), 10) || 0);
+			mouseState.currentPosition.y = event.pageY - $canvas.offset().top - (parseInt($canvas.css('borderTopWidth'), 10) || 0) - (parseInt($canvas.css('paddingTop'), 10) || 0);
 			
 			if (mouseState.dragging.active && (null !== mouseState.dragging.element)) {
 				var sphere = mouseState.dragging.element;
@@ -369,11 +369,11 @@ var Assignment1 = (function() {
 			spheres[i].maxScreen[1] /= spheres[i].maxScreen[3];
 			// spheres[i].maxScreen[2] /= spheres[i].maxScreen[3];
 			
-			spheres[i].minScreen[0] = canvas.get(0).width * (spheres[i].minScreen[0] + 1) / 2;
-			spheres[i].minScreen[1] = canvas.get(0).height - (canvas.get(0).height * (spheres[i].minScreen[1] + 1) / 2);
+			spheres[i].minScreen[0] = $canvas.get(0).width * (spheres[i].minScreen[0] + 1) / 2;
+			spheres[i].minScreen[1] = $canvas.get(0).height - ($canvas.get(0).height * (spheres[i].minScreen[1] + 1) / 2);
 			
-			spheres[i].maxScreen[0] = canvas.get(0).width * (spheres[i].maxScreen[0] + 1) / 2;
-			spheres[i].maxScreen[1] = canvas.get(0).height - (canvas.get(0).height * (spheres[i].maxScreen[1] + 1) / 2);
+			spheres[i].maxScreen[0] = $canvas.get(0).width * (spheres[i].maxScreen[0] + 1) / 2;
+			spheres[i].maxScreen[1] = $canvas.get(0).height - ($canvas.get(0).height * (spheres[i].maxScreen[1] + 1) / 2);
 			
 			spheres[i].minScreen = vec2.fromValues(spheres[i].minScreen[0], spheres[i].minScreen[1]);
 			spheres[i].maxScreen = vec2.fromValues(spheres[i].maxScreen[0], spheres[i].maxScreen[1]);
@@ -385,13 +385,13 @@ var Assignment1 = (function() {
 	
 	
 	var initWebGLContext = function() {
-		gl.viewport(0, 0, canvas.get(0).width, canvas.get(0).height);
+		gl.viewport(0, 0, $canvas.get(0).width, $canvas.get(0).height);
 		gl.enable(gl.DEPTH_TEST);
 		gl.clearColor(1.0, 1.0, 1.0, 1.0);
 	};
 	
 	var initPicking = function() {
-		picking.capturedColorMap = new Uint8Array(canvas.get(0).width * canvas.get(0).height * 4);
+		picking.capturedColorMap = new Uint8Array($canvas.get(0).width * $canvas.get(0).height * 4);
 		picking.framebuffer = gl.createFramebuffer();
 		
 		gl.bindFramebuffer(gl.FRAMEBUFFER, picking.framebuffer);
@@ -402,11 +402,11 @@ var Assignment1 = (function() {
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, canvas.get(0).width, canvas.get(0).height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, $canvas.get(0).width, $canvas.get(0).height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 		
 		var renderBuffer = gl.createRenderbuffer();
 		gl.bindRenderbuffer(gl.RENDERBUFFER, renderBuffer);
-		gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, canvas.get(0).width, canvas.get(0).height);
+		gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, $canvas.get(0).width, $canvas.get(0).height);
 		gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, rttTexture, 0);
 		gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderBuffer);
 		
@@ -554,7 +554,7 @@ var Assignment1 = (function() {
 		draw();
 		
 		try {
-			gl.readPixels(0, 0, canvas.get(0).width, canvas.get(0).height, gl.RGBA, gl.UNSIGNED_BYTE, picking.capturedColorMap);
+			gl.readPixels(0, 0, $canvas.get(0).width, $canvas.get(0).height, gl.RGBA, gl.UNSIGNED_BYTE, picking.capturedColorMap);
 			var color = getColorMapColor(mouseState.currentPosition.x, mouseState.currentPosition.y);
 			var index = buildAddressFromColor(color);
 			
@@ -709,7 +709,7 @@ var Assignment1 = (function() {
 	
 	
 	var getColorMapColor = function(x, y) {
-		if ((x < 0) || (y < 0) || (x > canvas.get(0).width) || (y > canvas.get(0).height)) {
+		if ((x < 0) || (y < 0) || (x > $canvas.get(0).width) || (y > $canvas.get(0).height)) {
 			throw new Error('Invalid color map location.');
 		}
 		
@@ -717,7 +717,7 @@ var Assignment1 = (function() {
 			throw new Error('No color map rendered.');
 		}
 		
-		var startAddress = (canvas.get(0).height - y - 1) * canvas.get(0).width * 4 + x * 4;
+		var startAddress = ($canvas.get(0).height - y - 1) * $canvas.get(0).width * 4 + x * 4;
 		
 		return [picking.capturedColorMap[startAddress], picking.capturedColorMap[startAddress + 1], picking.capturedColorMap[startAddress + 2]];
 	};
