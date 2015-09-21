@@ -138,7 +138,7 @@ var Assignment1 = (function() {
 		mouseEvents:		[]
 	};
 	
-	var lastTime = performance.now();
+	var lastTime = window.performance.now();
 	var elapsedTime = 0;
 	
 	var framecount = 0;
