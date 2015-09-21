@@ -20,7 +20,7 @@ var Assignment1 = (function() {
 			transSpeedFac:	5,
 			rotSpeedFac:	1,
 			t:		0,
-			pickingColor:	vec3.fromValues(0, 0, 1),
+			pickingColor:	WebGLHelper.flatteni32([0, 0, 1]),
 			onpick:		null
 		},
 		'2': {
@@ -31,7 +31,7 @@ var Assignment1 = (function() {
 			transSpeedFac:	2,
 			rotSpeedFac:	2,
 			t:		500,
-			pickingColor:	vec3.fromValues(0, 0, 2),
+			pickingColor:	WebGLHelper.flatteni32([0, 0, 2]),
 			onpick:		null
 		}
 	};
@@ -41,28 +41,28 @@ var Assignment1 = (function() {
 			t:		0,
 			transStart:	vec3.fromValues(-4, 2, 0),
 			endTrans:	vec3.fromValues(-4, -2, 0),
-			pickingColor:	vec3.fromValues(0, 0, 3),
+			pickingColor:	WebGLHelper.flatteni32([0, 0, 3]),
 			onpick:		null
 		},
 		'2': {
 			t:		0,
 			transStart:	vec3.fromValues(4, 2, 0),
 			endTrans:	vec3.fromValues(4, -2, 0),
-			pickingColor:	vec3.fromValues(0, 0, 4),
+			pickingColor:	WebGLHelper.flatteni32([0, 0, 4]),
 			onpick:		null
 		},
 		'3': {
 			t:		0,
 			transStart:	vec3.fromValues(-4, -2, 0),
 			endTrans:	vec3.fromValues(-4, 2, 0),
-			pickingColor:	vec3.fromValues(0, 0, 5),
+			pickingColor:	WebGLHelper.flatteni32([0, 0, 5]),
 			onpick:		null
 		},
 		'4': {
 			t:		0,
 			transStart:	vec3.fromValues(4, -2, 0),
 			endTrans:	vec3.fromValues(4, 2, 0),
-			pickingColor:	vec3.fromValues(0, 0, 6),
+			pickingColor:	WebGLHelper.flatteni32([0, 0, 6]),
 			onpick:		null
 		}
 	};
