@@ -38,6 +38,7 @@ var Assignment1 = (function() {
 	
 	var spheres = {
 		1: {
+			index:		1,
 			t:		0,
 			transStart:	vec3.fromValues(-4, 2, 0),
 			endTrans:	vec3.fromValues(-4, -2, 0),
@@ -45,6 +46,7 @@ var Assignment1 = (function() {
 			onpick:		null
 		},
 		2: {
+			index:		2,
 			t:		0,
 			transStart:	vec3.fromValues(4, 2, 0),
 			endTrans:	vec3.fromValues(4, -2, 0),
@@ -52,6 +54,7 @@ var Assignment1 = (function() {
 			onpick:		null
 		},
 		3: {
+			index:		3,
 			t:		0,
 			transStart:	vec3.fromValues(-4, -2, 0),
 			endTrans:	vec3.fromValues(-4, 2, 0),
@@ -59,6 +62,7 @@ var Assignment1 = (function() {
 			onpick:		null
 		},
 		4: {
+			index:		4,
 			t:		0,
 			transStart:	vec3.fromValues(4, -2, 0),
 			endTrans:	vec3.fromValues(4, 2, 0),
