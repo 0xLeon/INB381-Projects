@@ -118,7 +118,6 @@ var Assignment1 = (function() {
 	};
 	
 	var picking = {
-		grabColorMap:		false,
 		capturedColorMap:	null,
 		framebuffer:		null,
 		list:			{}
