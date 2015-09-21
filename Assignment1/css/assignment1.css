@@ -1,0 +1,33 @@
+body {
+	position: relative;
+	background-color: #aaa;
+	font-size: 0.7em;
+	font-family: 'Segoe UI', sans-serif;
+}
+
+canvas {
+	border: 20px solid black;
+	float: left;
+	margin-top: 11px;
+}
+
+fieldset {
+	margin-left: 10px;
+	display: inline-block;
+	min-width: 210px;
+}
+
+fieldset > p {
+	display: block;
+	position: relative;
+}
+
+fieldset > label {
+	display: inline-block;
+	position: relative;
+	min-width: 22px;
+}
+
+fieldset > label:not([for="enable-sound"]) {
+	top: -5px;
+}
