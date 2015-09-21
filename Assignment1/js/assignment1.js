@@ -182,7 +182,6 @@ var Assignment1 = (function() {
 			linkProgram();
 			locateShadersVariables();
 			initColorBuffer();
-			initMeshBuffer();
 			startWebGL();
 		}
 		catch (e) {
@@ -383,11 +382,6 @@ var Assignment1 = (function() {
 		
 		gl.enableVertexAttribArray(shadersVariables.vPosition);
 		gl.enableVertexAttribArray(shadersVariables.vColor);
-	};
-	
-	var initMeshBuffer = function() {
-		// gl.bindBuffer(gl.ARRAY_BUFFER, monkeyObj.buffers.verticesBuffer);
-		// gl.vertexAttribPointer(shadersVariables.vPosition, 3, gl.FLOAT, false, 0, 0);
 	};
 	
 	var initColorBuffer = function() {
