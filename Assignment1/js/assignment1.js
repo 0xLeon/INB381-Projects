@@ -12,7 +12,7 @@ var Assignment1 = (function() {
 	var sphereColors = [];
 	
 	var monkeys = {
-		'1': {
+		1: {
 			direction:	1,
 			rotation:	vec3.fromValues(0, 0, 0),
 			amp:		0.7,
@@ -23,7 +23,7 @@ var Assignment1 = (function() {
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 1]),
 			onpick:		null
 		},
-		'2': {
+		2: {
 			direction:	-1,
 			rotation:	vec3.fromValues(0, 0, 0),
 			amp:		0.7,
@@ -37,28 +37,28 @@ var Assignment1 = (function() {
 	};
 	
 	var spheres = {
-		'1': {
+		1: {
 			t:		0,
 			transStart:	vec3.fromValues(-4, 2, 0),
 			endTrans:	vec3.fromValues(-4, -2, 0),
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 3]),
 			onpick:		null
 		},
-		'2': {
+		2: {
 			t:		0,
 			transStart:	vec3.fromValues(4, 2, 0),
 			endTrans:	vec3.fromValues(4, -2, 0),
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 4]),
 			onpick:		null
 		},
-		'3': {
+		3: {
 			t:		0,
 			transStart:	vec3.fromValues(-4, -2, 0),
 			endTrans:	vec3.fromValues(-4, 2, 0),
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 5]),
 			onpick:		null
 		},
-		'4': {
+		4: {
 			t:		0,
 			transStart:	vec3.fromValues(4, -2, 0),
 			endTrans:	vec3.fromValues(4, 2, 0),
