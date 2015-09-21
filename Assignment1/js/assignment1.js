@@ -4,6 +4,7 @@ var Assignment1 = (function() {
 	
 	var projectionMatrix = mat4.create();
 	var viewMatrix = mat4.create();
+	var finalViewMatrix = mat4.create();
 	
 	var monkeyObj = null;
 	var monkeyColors = [];
@@ -205,6 +206,7 @@ var Assignment1 = (function() {
 	var initViewMatrices = function() {
 		mat4.perspective(projectionMatrix, Math.PI / 4, canvas.get(0).width / canvas.get(0).height, 1, 100000);
 		mat4.lookAt(viewMatrix, vec3.fromValues(0, 0, -8), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
+		mat4.multiply(finalViewMatrix, projectionMatrix, viewMatrix);
 	};
 	
 	
@@ -713,9 +715,8 @@ var Assignment1 = (function() {
 	
 	var getSpherePosition = function(sphere) {
 		var spherePos = vec3.lerp(vec3.create(), sphere.transStart, sphere.endTrans, sphere.t / 1000.0);
-		var view = mat4.multiply(mat4.create(), viewMatrix, projectionMatrix);
 		
-		return vec3.transformMat4(spherePos, spherePos, view);
+		return vec3.transformMat4(spherePos, spherePos, finalViewMatrix);
 	};
 	
 	
