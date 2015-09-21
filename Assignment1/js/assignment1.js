@@ -43,6 +43,10 @@ var Assignment1 = (function() {
 			transStart:	vec3.fromValues(-4, 2, 0),
 			endTrans:	vec3.fromValues(-4, -2, 0),
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 3]),
+			
+			minScreen:	null,
+			maxScreen:	null,
+			
 			onpick:		null
 		},
 		2: {
@@ -51,6 +55,10 @@ var Assignment1 = (function() {
 			transStart:	vec3.fromValues(4, 2, 0),
 			endTrans:	vec3.fromValues(4, -2, 0),
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 4]),
+			
+			minScreen:	null,
+			maxScreen:	null,
+			
 			onpick:		null
 		},
 		3: {
@@ -59,6 +67,10 @@ var Assignment1 = (function() {
 			transStart:	vec3.fromValues(-4, -2, 0),
 			endTrans:	vec3.fromValues(-4, 2, 0),
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 5]),
+			
+			minScreen:	null,
+			maxScreen:	null,
+			
 			onpick:		null
 		},
 		4: {
@@ -67,6 +79,10 @@ var Assignment1 = (function() {
 			transStart:	vec3.fromValues(4, -2, 0),
 			endTrans:	vec3.fromValues(4, 2, 0),
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 6]),
+			
+			minScreen:	null,
+			maxScreen:	null,
+			
 			onpick:		null
 		}
 	};
@@ -151,19 +167,6 @@ var Assignment1 = (function() {
 	var init = function(_canvas) {
 		canvas = $(_canvas);
 		
-		canvas.on('mousedown', function(event) {
-			mouseState.currentPosition.x = event.pageX - $(this).offset().left - (parseInt($(this).css('borderLeftWidth'), 10) || 0) - (parseInt($(this).css('paddingLeft'), 10) || 0);
-			mouseState.currentPosition.y = event.pageY - $(this).offset().top - (parseInt($(this).css('borderTopWidth'), 10) || 0) - (parseInt($(this).css('paddingTop'), 10) || 0);
-			
-			if ((mouseState.currentPosition.x >= 0) && (mouseState.currentPosition.y >= 0) && (mouseState.currentPosition.x < canvas.get(0).width) && (mouseState.currentPosition.y < canvas.get(0).height)) {
-				mouseState.doPicking = true;
-			}
-		});
-		canvas.on('mousemove', function(event) {
-			// mouseState.currentPosition.x = event.pageX - $(this).offset().left;
-			// mouseState.currentPosition.y = event.pageY - $(this).offset().top;
-		});
-		
 		try {
 			gl = WebGLHelper.createContext(canvas, {});
 			
@@ -174,6 +177,9 @@ var Assignment1 = (function() {
 			initSliders();
 			initButtons();
 			initMouseState();
+			initDragging();
+			
+			initSpheres();
 			
 			initWebGLContext();
 			initPicking();
@@ -256,6 +262,72 @@ var Assignment1 = (function() {
 		})
 	};
 	
+	var initDragging = function() {
+		canvas.on('mousedown', function(event) {
+			mouseState.currentPosition.x = event.pageX - $(this).offset().left - (parseInt($(this).css('borderLeftWidth'), 10) || 0) - (parseInt($(this).css('paddingLeft'), 10) || 0);
+			mouseState.currentPosition.y = event.pageY - $(this).offset().top - (parseInt($(this).css('borderTopWidth'), 10) || 0) - (parseInt($(this).css('paddingTop'), 10) || 0);
+			
+			if ((mouseState.currentPosition.x >= 0) && (mouseState.currentPosition.y >= 0) && (mouseState.currentPosition.x < canvas.get(0).width) && (mouseState.currentPosition.y < canvas.get(0).height)) {
+				picking.doPicking = true;
+			}
+		});
+		$(document).on('mouseup', function() {
+			mouseState.dragging.active = false;
+			mouseState.dragging.element = null;
+		});
+		$(document).on('mousemove', function(event) {
+			mouseState.currentPosition.x = event.pageX - canvas.offset().left - (parseInt(canvas.css('borderLeftWidth'), 10) || 0) - (parseInt(canvas.css('paddingLeft'), 10) || 0);
+			mouseState.currentPosition.y = event.pageY - canvas.offset().top - (parseInt(canvas.css('borderTopWidth'), 10) || 0) - (parseInt(canvas.css('paddingTop'), 10) || 0);
+			
+			if (mouseState.dragging.active && (null !== mouseState.dragging.element)) {
+				var sphere = mouseState.dragging.element;
+				
+				var sphereMinY = sphere.minScreen[1];
+				var sphereMaxY = sphere.maxScreen[1];
+				
+				sphere.t =  Math.round(((mouseState.currentPosition.y - sphereMinY) / (sphereMaxY - sphereMinY)) * 1000);
+				
+				if (sphere.t >= 1000) {
+					sphere.t = 1000;
+				}
+				else if (sphere.t <= 0) {
+					sphere.t = 0;
+				}
+				
+				$('#sphere' + sphere.index.toString(10) + '-pos-val').text(parseInt(sphere.t / 10, 10));
+				$('#sphere' + sphere.index.toString(10) + '-pos').get(0).value = sphere.t;
+			}
+		});
+	};
+	
+	var initSpheres = function() {
+		for (var i = 1; i < 5; ++i) {
+			spheres[i].minScreen = vec4.transformMat4(vec4.create(), vec4.fromValues(spheres[i].transStart[0], spheres[i].transStart[1], spheres[i].transStart[2], 1.0), finalViewMatrix);
+			spheres[i].maxScreen = vec4.transformMat4(vec4.create(), vec4.fromValues(spheres[i].endTrans[0], spheres[i].endTrans[1], spheres[i].endTrans[2], 1.0), finalViewMatrix);
+			
+			spheres[i].minScreen[0] /= spheres[i].minScreen[3];
+			spheres[i].minScreen[1] /= spheres[i].minScreen[3];
+			// spheres[i].minScreen[2] /= spheres[i].minScreen[3];
+			
+			spheres[i].maxScreen[0] /= spheres[i].maxScreen[3];
+			spheres[i].maxScreen[1] /= spheres[i].maxScreen[3];
+			// spheres[i].maxScreen[2] /= spheres[i].maxScreen[3];
+			
+			spheres[i].minScreen[0] = canvas.get(0).width * (spheres[i].minScreen[0] + 1) / 2;
+			spheres[i].minScreen[1] = canvas.get(0).height - (canvas.get(0).height * (spheres[i].minScreen[1] + 1) / 2);
+			
+			spheres[i].maxScreen[0] = canvas.get(0).width * (spheres[i].maxScreen[0] + 1) / 2;
+			spheres[i].maxScreen[1] = canvas.get(0).height - (canvas.get(0).height * (spheres[i].maxScreen[1] + 1) / 2);
+			
+			spheres[i].minScreen = vec2.fromValues(spheres[i].minScreen[0], spheres[i].minScreen[1]);
+			spheres[i].maxScreen = vec2.fromValues(spheres[i].maxScreen[0], spheres[i].maxScreen[1]);
+			
+			
+			spheres[i].onpick = sphereStartDrag;
+		}
+	};
+	
+	
 	var initWebGLContext = function() {
 		gl.viewport(0, 0, canvas.get(0).width, canvas.get(0).height);
 		gl.enable(gl.DEPTH_TEST);
@@ -306,10 +378,6 @@ var Assignment1 = (function() {
 					}
 				}
 			};
-		}
-		
-		for (var j = 1; j < 5; ++j) {
-			spheres[j].onpick = startSphereDrag;
 		}
 	};
 	
@@ -588,9 +656,10 @@ var Assignment1 = (function() {
 		return color[0] * 65536 + color[1] * 256 + color[2];
 	};
 	
-	var startSphereDrag = function() {
+	var sphereStartDrag = function() {
 		if (!mouseState.dragging.element) {
 			mouseState.dragging.element = this;
+			mouseState.dragging.active = true;
 		}
 	};
 	
