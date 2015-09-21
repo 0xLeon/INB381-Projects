@@ -35,12 +35,7 @@
 			
 			fieldset > label {
 				display: inline-block;
-				min-width: 20px;
-			}
-			
-			.monkey-control {
-				display: none;
-				visibility: hidden;
+				min-width: 22px;
 			}
 		/* ]]> */
 		</style>
@@ -61,6 +56,12 @@
 					<legend>Monkey 1</legend>
 					<button type="button" id="monkey1-up">Speed Up</button>
 					<button type="button" id="monkey1-down">Slow Down</button>
+					<br />
+					<label id="monkey1-amp-val" for="monkey1-amp"></label>
+					<input type="range" id="monkey1-amp" min="0" max="2" step="0.05" value="0.7" data-index="1" data-type="amp" />
+					<br />
+					<label id="monkey1-freq-val" for="monkey1-freq"></label>
+					<input type="range" id="monkey1-freq" min="0" max="10" step="0.05" value="1.0" data-index="1" data-type="freq" />
 				</fieldset>
 			</div>
 			<div>
@@ -68,6 +69,12 @@
 					<legend>Monkey 2</legend>
 					<button type="button" id="monkey2-up">Speed Up</button>
 					<button type="button" id="monkey2-down">Slow Down</button>
+					<br />
+					<label id="monkey2-amp-val" for="monkey2-amp"></label>
+					<input type="range" id="monkey2-amp" min="0" max="2" step="0.05" value="0.7" data-index="2" data-type="amp" />
+					<br />
+					<label id="monkey2-freq-val" for="monkey2-freq"></label>
+					<input type="range" id="monkey2-freq" min="0" max="10" step="0.05" value="1.0" data-index="2" data-type="freq" />
 				</fieldset>
 			</div>
 			<div>

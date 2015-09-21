@@ -217,6 +217,26 @@ var Assignment1 = (function() {
 	};
 	
 	var initSliders = function() {
+		for (var j = 1; j < 3; ++j) {
+			var sliderAmp = $('#monkey' + j.toString(10) + '-amp');
+			var sliderAmpVal = $('#monkey' + j.toString(10) + '-amp-val');
+			
+			var sliderFreq = $('#monkey' + j.toString(10) + '-freq');
+			var sliderFreqVal = $('#monkey' + j.toString(10) + '-freq-val');
+			
+			sliderAmpVal.text(sliderAmp.get(0).value);
+			sliderFreqVal.text(sliderFreq.get(0).value);
+			
+			$([sliderAmp.get(0), sliderFreq.get(0)]).on('input', function() {
+				var $this = $(this);
+				var value = parseFloat($this.get(0).value);
+				
+				$('#monkey' + $this.data('index').toString() + '-' + $this.data('type') + '-val').text(value);
+				
+				monkeys[$this.data('index')][$this.data('type')] = value;
+			});
+		}
+		
 		for (var i = 1; i < 5; ++i) {
 			var slider = $('#sphere' + i.toString(10) + '-pos');
 			var sliderVal = $('#sphere' + i.toString(10) + '-pos-val');
