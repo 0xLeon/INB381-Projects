@@ -15,8 +15,8 @@ var Assignment1 = (function() {
 		'1': {
 			direction:	1,
 			rotation:	vec3.fromValues(0, 0, 0),
+			amp:		0.7,
 			freq:		2.0,
-			amplitude:	0.7,
 			transSpeedFac:	5,
 			rotSpeedFac:	1,
 			t:		0,
@@ -26,8 +26,8 @@ var Assignment1 = (function() {
 		'2': {
 			direction:	-1,
 			rotation:	vec3.fromValues(0, 0, 0),
+			amp:		0.7,
 			freq:		1.0,
-			amplitude:	0.7,
 			transSpeedFac:	2,
 			rotSpeedFac:	2,
 			t:		500,
@@ -476,7 +476,7 @@ var Assignment1 = (function() {
 		gl.uniform3fv(shadersVariables.s2end, spheres[2].endTrans);
 		gl.uniform1f(shadersVariables.s2t, spheres[2].t);
 		gl.uniform1f(shadersVariables.t, monkeys[1].t);
-		gl.uniform1f(shadersVariables.sinAmplitude, monkeys[1].amplitude);
+		gl.uniform1f(shadersVariables.sinAmplitude, monkeys[1].amp);
 		gl.uniform1f(shadersVariables.sinFrequency, monkeys[1].freq);
 		gl.uniform3fv(shadersVariables.rotation, monkeys[1].rotation);
 		gl.uniform1f(shadersVariables.gFactor, 1.0);
@@ -492,7 +492,7 @@ var Assignment1 = (function() {
 		gl.uniform3fv(shadersVariables.s2end, spheres[4].endTrans);
 		gl.uniform1f(shadersVariables.s2t, spheres[4].t);
 		gl.uniform1f(shadersVariables.t, monkeys[2].t);
-		gl.uniform1f(shadersVariables.sinAmplitude, monkeys[2].amplitude);
+		gl.uniform1f(shadersVariables.sinAmplitude, monkeys[2].amp);
 		gl.uniform1f(shadersVariables.sinFrequency, monkeys[2].freq);
 		gl.uniform3fv(shadersVariables.rotation, monkeys[2].rotation);
 		gl.uniform1f(shadersVariables.gFactor, 1.0 / 3.0);
