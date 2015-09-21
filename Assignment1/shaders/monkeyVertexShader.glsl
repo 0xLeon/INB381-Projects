@@ -31,32 +31,34 @@ varying vec4 fColor;
 const float PI = 3.141592653589793238462643383;
 
 void main() {
+	float tFrac = t / 1000.0;
+	
+	vec3 angles = radians(rotation);
+	vec3 c = cos(angles);
+	vec3 s = sin(angles);
+	
+	mat4 rx = mat4(
+		1.0, 0.0, 0.0, 0.0,
+		0.0, c.x, s.x, 0.0,
+		0.0, -s.x, c.x, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	);
+			
+	mat4 ry = mat4(
+		c.y, 0.0, -s.y, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		s.y, 0.0, c.y, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	);
+	
+	mat4 rz = mat4(
+		c.z, -s.z, 0.0, 0.0,
+		s.z, c.z, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	);
+	
 	if (1 == isMonkey) {
-		vec3 angles = radians(rotation);
-		vec3 c = cos(angles);
-		vec3 s = sin(angles);
-		
-		mat4 rx = mat4(
-			1.0, 0.0, 0.0, 0.0,
-			0.0, c.x, s.x, 0.0,
-			0.0, -s.x, c.x, 0.0,
-			0.0, 0.0, 0.0, 1.0
-		);
-				
-		mat4 ry = mat4(
-			c.y, 0.0, -s.y, 0.0,
-			0.0, 1.0, 0.0, 0.0,
-			s.y, 0.0, c.y, 0.0,
-			0.0, 0.0, 0.0, 1.0
-		);
-		
-		mat4 rz = mat4(
-			c.z, -s.z, 0.0, 0.0,
-			s.z, c.z, 0.0, 0.0,
-			0.0, 0.0, 1.0, 0.0,
-			0.0, 0.0, 0.0, 1.0
-		);
-		
 		mat4 scaleMat = mat4(
 			1.0, 0.0, 0.0, 0.0,
 			0.0, 1.0, 0.0, 0.0,
@@ -67,7 +69,6 @@ void main() {
 		vec3 s1pos = mix(s1start, s1end, s1t / 1000.0);
 		vec3 s2pos = mix(s2start, s2end, s2t / 1000.0);
 		
-		float tFrac = t / 1000.0;
 		vec3 translation = mix(s1pos, s2pos, tFrac);
 		
 		translation.y += sinAmplitude * sin(sinFrequency * tFrac * 2.0 * PI);
@@ -103,7 +104,7 @@ void main() {
 			translation, 1.0
 		);
 		
-		gl_Position = projectionMatrix * (viewMatrix * (transMat * vec4(vPosition, 1.0)));
+		gl_Position = projectionMatrix * (viewMatrix * (transMat * ((rz * ry * rx) * vec4(vPosition, 1.0))));
 		
 		if (1 == doPickingRender) {
 			fColor = vec4((vec3(pickingColor) / 255.0), 1.0);

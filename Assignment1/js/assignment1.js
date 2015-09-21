@@ -42,6 +42,7 @@ var Assignment1 = (function() {
 			t:		0,
 			transStart:	vec3.fromValues(-4, 2, 0),
 			endTrans:	vec3.fromValues(-4, -2, 0),
+			rotation:	vec3.fromValues(0, 0, 0),
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 3]),
 			
 			minScreen:	null,
@@ -54,6 +55,7 @@ var Assignment1 = (function() {
 			t:		0,
 			transStart:	vec3.fromValues(4, 2, 0),
 			endTrans:	vec3.fromValues(4, -2, 0),
+			rotation:	vec3.fromValues(0, 0, 0),
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 4]),
 			
 			minScreen:	null,
@@ -66,6 +68,7 @@ var Assignment1 = (function() {
 			t:		0,
 			transStart:	vec3.fromValues(-4, -2, 0),
 			endTrans:	vec3.fromValues(-4, 2, 0),
+			rotation:	vec3.fromValues(0, 0, 0),
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 5]),
 			
 			minScreen:	null,
@@ -78,6 +81,7 @@ var Assignment1 = (function() {
 			t:		0,
 			transStart:	vec3.fromValues(4, -2, 0),
 			endTrans:	vec3.fromValues(4, 2, 0),
+			rotation:	vec3.fromValues(0, 0, 0),
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 6]),
 			
 			minScreen:	null,
@@ -581,24 +585,28 @@ var Assignment1 = (function() {
 		gl.uniform3fv(shadersVariables.sphereTransStart, spheres[1].transStart);
 		gl.uniform3fv(shadersVariables.sphereTransEnd, spheres[1].endTrans);
 		gl.uniform1f(shadersVariables.t, spheres[1].t);
+		gl.uniform3fv(shadersVariables.rotation, spheres[1].rotation);
 		gl.uniform3iv(shadersVariables.pickingColor, spheres[1].pickingColor);
 		gl.drawElements(gl.TRIANGLES, sphereObj.meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
 		
 		gl.uniform3fv(shadersVariables.sphereTransStart, spheres[2].transStart);
 		gl.uniform3fv(shadersVariables.sphereTransEnd, spheres[2].endTrans);
 		gl.uniform1f(shadersVariables.t, spheres[2].t);
+		gl.uniform3fv(shadersVariables.rotation, spheres[2].rotation);
 		gl.uniform3iv(shadersVariables.pickingColor, spheres[2].pickingColor);
 		gl.drawElements(gl.TRIANGLES, sphereObj.meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
 		
 		gl.uniform3fv(shadersVariables.sphereTransStart, spheres[3].transStart);
 		gl.uniform3fv(shadersVariables.sphereTransEnd, spheres[3].endTrans);
 		gl.uniform1f(shadersVariables.t, spheres[3].t);
+		gl.uniform3fv(shadersVariables.rotation, spheres[3].rotation);
 		gl.uniform3iv(shadersVariables.pickingColor, spheres[3].pickingColor);
 		gl.drawElements(gl.TRIANGLES, sphereObj.meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
 		
 		gl.uniform3fv(shadersVariables.sphereTransStart, spheres[4].transStart);
 		gl.uniform3fv(shadersVariables.sphereTransEnd, spheres[4].endTrans);
 		gl.uniform1f(shadersVariables.t, spheres[4].t);
+		gl.uniform3fv(shadersVariables.rotation, spheres[4].rotation);
 		gl.uniform3iv(shadersVariables.pickingColor, spheres[4].pickingColor);
 		gl.drawElements(gl.TRIANGLES, sphereObj.meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
 	};
@@ -631,6 +639,13 @@ var Assignment1 = (function() {
 		
 		monkeys[1].rotation[1] = (monkeys[1].rotation[1] + (angle * monkeys[1].rotSpeedFac)) % 360;
 		monkeys[2].rotation[1] = (monkeys[2].rotation[1] + (angle * monkeys[2].rotSpeedFac)) % 360;
+		
+		fract = deltaTime / 3000.0;
+		angle = 360 * fract;
+		spheres[1].rotation[1] = (spheres[1].rotation[1] + angle) % 360;
+		spheres[2].rotation[1] = (spheres[2].rotation[1] + angle) % 360;
+		spheres[3].rotation[1] = (spheres[3].rotation[1] + angle) % 360;
+		spheres[4].rotation[1] = (spheres[4].rotation[1] + angle) % 360;
 	};
 	
 	var getColorMapColor = function(x, y) {
