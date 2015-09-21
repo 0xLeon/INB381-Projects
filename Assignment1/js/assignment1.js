@@ -179,6 +179,7 @@ var Assignment1 = (function() {
 			initMouseState();
 			initDragging();
 			
+			initMonkeys();
 			initSpheres();
 			
 			initWebGLContext();
@@ -300,6 +301,13 @@ var Assignment1 = (function() {
 		});
 	};
 	
+	
+	var initMonkeys = function() {
+		for (var i = 1; i < 3; ++i) {
+			monkeys[i].onpick = monkeyPick;
+		}
+	};
+	
 	var initSpheres = function() {
 		for (var i = 1; i < 5; ++i) {
 			spheres[i].minScreen = vec4.transformMat4(vec4.create(), vec4.fromValues(spheres[i].transStart[0], spheres[i].transStart[1], spheres[i].transStart[2], 1.0), finalViewMatrix);
@@ -360,25 +368,6 @@ var Assignment1 = (function() {
 		picking.list[buildAddressFromColor(spheres[2].pickingColor)] = spheres[2];
 		picking.list[buildAddressFromColor(spheres[3].pickingColor)] = spheres[3];
 		picking.list[buildAddressFromColor(spheres[4].pickingColor)] = spheres[4];
-		
-		for (var i = 1; i < 3; ++i) {
-			monkeys[i].onpick = function() {
-				if (mouseState.altKey) {
-					this.transSpeedFac -= 1;
-					
-					if (this.transSpeedFac <= 0.1) {
-						this.transSpeedFac = 0;
-					}
-				}
-				else {
-					this.transSpeedFac += 1;
-					
-					if (this.transSpeedFac >= 9.9) {
-						this.transSpeedFac = 10;
-					}
-				}
-			};
-		}
 	};
 	
 	var loadMeshData = function() {
@@ -662,6 +651,24 @@ var Assignment1 = (function() {
 			mouseState.dragging.active = true;
 		}
 	};
+	
+	var monkeyPick = function() {
+		if (mouseState.altKey) {
+			this.transSpeedFac -= 1;
+			
+			if (this.transSpeedFac <= 0.1) {
+				this.transSpeedFac = 0;
+			}
+		}
+		else {
+			this.transSpeedFac += 1;
+			
+			if (this.transSpeedFac >= 9.9) {
+				this.transSpeedFac = 10;
+			}
+		}
+	};
+	
 	
 	var getSpherePosition = function(sphere) {
 		var spherePos = vec3.lerp(vec3.create(), sphere.transStart, sphere.endTrans, sphere.t / 1000.0);
