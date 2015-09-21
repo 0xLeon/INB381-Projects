@@ -141,6 +141,7 @@ var Assignment1 = (function() {
 	var lastTime = window.performance.now();
 	var elapsedTime = 0;
 	
+	var $fpsValue = null;
 	var framecount = 0;
 	var fps = 0;
 	
@@ -168,6 +169,7 @@ var Assignment1 = (function() {
 			mat4.perspective(projectionMatrix, Math.PI / 4, canvas.get(0).width / canvas.get(0).height, 1, 100000);
 			mat4.lookAt(viewMatrix, vec3.fromValues(0, 0, -8), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
 			
+			initFps();
 			initSliders();
 			initButtons();
 			initMouseState();
@@ -187,6 +189,14 @@ var Assignment1 = (function() {
 			window.alert(e.message);
 			console.error(e);
 		}
+	};
+	
+	var initFps = function() {
+		$fpsValue = $('#fps-value');
+		
+		window.setInterval(function() {
+			$fpsValue.text(Assignment1.getFps());
+		}, 1000);
 	};
 	
 	var initSliders = function() {
