@@ -33,9 +33,19 @@
 				min-width: 210px;
 			}
 			
+			fieldset > p {
+				display: block;
+				position: relative;
+			}
+			
 			fieldset > label {
 				display: inline-block;
+				position: relative;
 				min-width: 22px;
+			}
+		
+			fieldset > label:not([for="enable-sound"]) {
+				top: -5px;
 			}
 		/* ]]> */
 		</style>
@@ -49,6 +59,11 @@
 				<fieldset>
 					<legend>Statistics</legend>
 					<span><span id="fps-value">0</span> fps</span>
+					<br />
+					<label for="enable-sound">
+						<input type="checkbox" id="enable-sound" checked="checked" />
+						Enable Sound
+					</label>
 				</fieldset>
 			</div>
 			<div>

@@ -21,6 +21,7 @@ var Assignment1 = (function() {
 			transSpeedFac:	5,
 			rotSpeedFac:	1,
 			t:		0,
+			bounceSound:	null,
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 1]),
 			onpick:		null
 		},
@@ -32,6 +33,7 @@ var Assignment1 = (function() {
 			transSpeedFac:	2,
 			rotSpeedFac:	2,
 			t:		500,
+			bounceSound:	null,
 			pickingColor:	WebGLHelper.flatteni32([0, 0, 2]),
 			onpick:		null
 		}
@@ -168,6 +170,9 @@ var Assignment1 = (function() {
 	var framecount = 0;
 	var fps = 0;
 	
+	var $soundCheckbox = null;
+	var enableSound = true;
+	
 	
 	var init = function(_canvas) {
 		canvas = $(_canvas);
@@ -182,6 +187,7 @@ var Assignment1 = (function() {
 			initButtons();
 			initMouseState();
 			initDragging();
+			initSound();
 			
 			initMonkeys();
 			initSpheres();
@@ -333,10 +339,20 @@ var Assignment1 = (function() {
 		});
 	};
 	
+	var initSound = function() {
+		$soundCheckbox = $('#enable-sound');
+		enableSound = $soundCheckbox.is(':checked');
+		
+		$soundCheckbox.on('change', function() {
+			enableSound = ($(this).is(':checked'));
+		});
+	};
+	
 	
 	var initMonkeys = function() {
 		for (var i = 1; i < 3; ++i) {
 			monkeys[i].onpick = monkeyPick;
+			monkeys[i].bounceSound = new Audio('./sound/Jump.wav');
 		}
 	};
 	
@@ -639,10 +655,18 @@ var Assignment1 = (function() {
 		if (monkeys[1].t > 1000) {
 			monkeys[1].t = 1000;
 			monkeys[1].direction *= -1;
+			
+			if (enableSound) {
+				monkeys[1].bounceSound.play();
+			}
 		}
 		else if (monkeys[1].t < 0) {
 			monkeys[1].t = 0;
 			monkeys[1].direction *= -1;
+			
+			if (enableSound) {
+				monkeys[1].bounceSound.play();
+			}
 		}
 		
 		monkeys[2].t += monkeys[2].direction * monkeys[2].transSpeedFac;
@@ -650,10 +674,18 @@ var Assignment1 = (function() {
 		if (monkeys[2].t > 1000) {
 			monkeys[2].t = 1000;
 			monkeys[2].direction *= -1;
+			
+			if (enableSound) {
+				monkeys[2].bounceSound.play();
+			}
 		}
 		else if (monkeys[2].t < 0) {
 			monkeys[2].t = 0;
 			monkeys[2].direction *= -1;
+			
+			if (enableSound) {
+				monkeys[2].bounceSound.play();
+			}
 		}
 		
 		var fract = deltaTime / 5000.0;
