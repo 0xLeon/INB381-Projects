@@ -170,8 +170,7 @@ var Assignment1 = (function() {
 		try {
 			gl = WebGLHelper.createContext(canvas, {});
 			
-			mat4.perspective(projectionMatrix, Math.PI / 4, canvas.get(0).width / canvas.get(0).height, 1, 100000);
-			mat4.lookAt(viewMatrix, vec3.fromValues(0, 0, -8), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
+			initViewMatrices();
 			
 			initFps();
 			initSliders();
@@ -197,6 +196,13 @@ var Assignment1 = (function() {
 			console.error(e);
 		}
 	};
+	
+	
+	var initViewMatrices = function() {
+		mat4.perspective(projectionMatrix, Math.PI / 4, canvas.get(0).width / canvas.get(0).height, 1, 100000);
+		mat4.lookAt(viewMatrix, vec3.fromValues(0, 0, -8), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
+	};
+	
 	
 	var initFps = function() {
 		$fpsValue = $('#fps-value');
