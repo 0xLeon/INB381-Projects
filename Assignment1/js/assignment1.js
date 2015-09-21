@@ -145,13 +145,13 @@ var Assignment1 = (function() {
 	};
 	
 	var picking = {
+		doPicking:		false,
 		capturedColorMap:	null,
 		framebuffer:		null,
 		list:			{}
 	};
 	
 	var mouseState = {
-		doPicking:		false,
 		altKey:			false,
 		currentPosition: {
 			x:	0,
@@ -511,6 +511,7 @@ var Assignment1 = (function() {
 		buffers.sphereColorBuffer.numItems = sphereObj.meshData.vertexIndices.length;
 	};
 	
+	
 	var startWebGL = function() {
 		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		gl.useProgram(programs.monkey);
@@ -522,30 +523,8 @@ var Assignment1 = (function() {
 	};
 	
 	var render = function(timestampNow) {
-		if (mouseState.doPicking) {
-			mouseState.doPicking = false;
-			
-			gl.bindFramebuffer(gl.FRAMEBUFFER, picking.framebuffer);
-			gl.uniform1i(shadersVariables.doPickingRender, 1);
-			
-			draw();
-			
-			try {
-				gl.readPixels(0, 0, canvas.get(0).width, canvas.get(0).height, gl.RGBA, gl.UNSIGNED_BYTE, picking.capturedColorMap);
-				var color = getColorMapColor(mouseState.currentPosition.x, mouseState.currentPosition.y);
-				var index = buildAddressFromColor(color);
-				
-				if (!!picking.list[index] && $.isFunction(picking.list[index].onpick)) {
-					picking.list[index].onpick.apply(picking.list[index], null);
-				}
-			}
-			catch (e) {
-				console.error(e);
-			}
-			finally {
-				gl.uniform1i(shadersVariables.doPickingRender, 0);
-				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-			}
+		if (picking.doPicking) {
+			pickingRender(timestampNow);
 		}
 		
 		draw();
@@ -564,6 +543,32 @@ var Assignment1 = (function() {
 		
 		// schedule next render
 		window[WebGLHelper.requestAnimationFrame](render);
+	};
+	
+	var pickingRender = function(timestampNow) {
+		picking.doPicking = false;
+		
+		gl.bindFramebuffer(gl.FRAMEBUFFER, picking.framebuffer);
+		gl.uniform1i(shadersVariables.doPickingRender, 1);
+		
+		draw();
+		
+		try {
+			gl.readPixels(0, 0, canvas.get(0).width, canvas.get(0).height, gl.RGBA, gl.UNSIGNED_BYTE, picking.capturedColorMap);
+			var color = getColorMapColor(mouseState.currentPosition.x, mouseState.currentPosition.y);
+			var index = buildAddressFromColor(color);
+			
+			if (!!picking.list[index] && $.isFunction(picking.list[index].onpick)) {
+				picking.list[index].onpick.apply(picking.list[index], null);
+			}
+		}
+		catch (e) {
+			console.error(e);
+		}
+		finally {
+			gl.uniform1i(shadersVariables.doPickingRender, 0);
+			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+		}
 	};
 	
 	var draw = function() {
@@ -701,6 +706,7 @@ var Assignment1 = (function() {
 		spheres[3].rotation[1] = (spheres[3].rotation[1] + angle) % 360;
 		spheres[4].rotation[1] = (spheres[4].rotation[1] + angle) % 360;
 	};
+	
 	
 	var getColorMapColor = function(x, y) {
 		if ((x < 0) || (y < 0) || (x > canvas.get(0).width) || (y > canvas.get(0).height)) {
