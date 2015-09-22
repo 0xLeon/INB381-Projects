@@ -46,9 +46,9 @@ var WebGLHelper = (function() {
 	/**
 	 * Flattens a given numeric array input to be used with WebGL buffers.
 	 * 
-	 * @param	{Array|TypedArray}	values		Array or array of arays containing the values
+	 * @param	{Array|Float32Array}	values		Array or array of arays containing the values
 	 * @param	{function}		__targetType	Target typed array type
-	 * @returns	{TypedArray}				Falltened verion of the inputted values
+	 * @returns	{Float32Array}				Falltened verion of the inputted values
 	 * @private
 	 */
 	var __flatten = function(values, __targetType) {
