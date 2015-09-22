@@ -5,6 +5,7 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 
 uniform vec3 rotation;
+uniform float scaleFactor;
 uniform float t;
 
 uniform float gFactor;
@@ -60,9 +61,9 @@ void main() {
 	
 	if (1 == isMonkey) {
 		mat4 scaleMat = mat4(
-			1.0, 0.0, 0.0, 0.0,
-			0.0, 1.0, 0.0, 0.0,
-			0.0, 0.0, 1.0, 0.0,
+			scaleFactor, 0.0, 0.0, 0.0,
+			0.0, scaleFactor, 0.0, 0.0,
+			0.0, 0.0, scaleFactor, 0.0,
 			0.0, 0.0, 0.0, 1.0
 		);
 		

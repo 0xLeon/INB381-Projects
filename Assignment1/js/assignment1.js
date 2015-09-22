@@ -75,6 +75,7 @@ var Assignment1 = (function() {
 		1: {
 			direction:	1,
 			rotation:	vec3.fromValues(0, 0, 0),
+			scaleFactor:	1.0,
 			amp:		0.7,
 			freq:		2.0,
 			transSpeedFac:	5,
@@ -87,6 +88,7 @@ var Assignment1 = (function() {
 		2: {
 			direction:	-1,
 			rotation:	vec3.fromValues(0, 0, 0),
+			scaleFactor:	1.0,
 			amp:		0.7,
 			freq:		1.0,
 			transSpeedFac:	2,
@@ -194,6 +196,7 @@ var Assignment1 = (function() {
 		viewMatrix:		null,
 		
 		rotation:		null,
+		scaleFactor:		null,
 		t:			null,
 		gFactor:		null,
 		bFactor:		null,
@@ -256,6 +259,17 @@ var Assignment1 = (function() {
 	};
 	
 	/**
+	 * Object keeping track of loading status of other assets
+	 * 
+	 * @type	{Object}
+	 */
+	var loadingStatus = {
+		shaders:	false,
+		mesh:		false,
+		sound:		false
+	};
+	
+	/**
 	 * Timestamp to keep track of elapsed time for animation
 	 * 
 	 * @type	{number}
@@ -304,6 +318,34 @@ var Assignment1 = (function() {
 	 */
 	var enableSound = true;
 	
+	/**
+	 * Audio Context used for music based monkey scaling
+	 * 
+	 * @type	{AudioContext}
+	 */
+	var scaleSoundContext = null;
+	
+	/**
+	 * Scaling sound source
+	 * 
+	 * @type	{AudioBufferSourceNode}
+	 */
+	var scaleSoundSource = null;
+	
+	/**
+	 * Scaling sound analyser
+	 * 
+	 * @type	{AnalyserNode}
+	 */
+	var scaleSoundAnalyser = null;
+	
+	/**
+	 * Scaling sound gain node
+	 * 
+	 * @type	{GainNode}
+	 */
+	var scaleSoundVolume = null;
+	
 	
 	/**
 	 * Constructor initializing all needed stuff and starting rendering
@@ -336,7 +378,14 @@ var Assignment1 = (function() {
 			linkProgram();
 			locateShadersVariables();
 			initColorBuffer();
-			startWebGL();
+			
+			var loadingInterval = window.setInterval(function() {
+				if (loadingStatus.shaders && loadingStatus.mesh && loadingStatus.sound) {
+					window.clearInterval(loadingInterval);
+					
+					startWebGL();
+				}
+			}, 10);
 		}
 		catch (e) {
 			window.alert(e.message);
@@ -494,15 +543,75 @@ var Assignment1 = (function() {
 	};
 	
 	/**
-	 * Initializes bounce sound
+	 * Initializes bounce sound and background sound with scaling
 	 */
 	var initSound = function() {
 		$soundCheckbox = $('#enable-sound');
 		enableSound = $soundCheckbox.is(':checked');
 		
 		$soundCheckbox.on('change', function() {
-			enableSound = ($(this).is(':checked'));
+			enableSound = $(this).is(':checked');
+			
+			if (enableSound) {
+				scaleSoundVolume.gain.value = 3;
+			}
+			else {
+				scaleSoundVolume.gain.value = 0;
+				monkeys[1].scaleFactor = 1.0;
+				monkeys[2].scaleFactor = 1.0;
+			}
 		});
+		
+		
+		scaleSoundContext = new (AudioContext || webkitAudioContext)();
+		
+		var soundUrl = './sound/FunkLoop.mp3';
+		var request = new XMLHttpRequest();
+		request.responseType = 'arraybuffer';
+		
+		request.onload = function() {
+			if (4 === request.readyState) {
+				if (200 === request.status) {
+					var audioDataBuffer = request.response;
+					
+					scaleSoundSource = scaleSoundContext.createBufferSource();
+					
+					scaleSoundContext.decodeAudioData(audioDataBuffer, function(decodedAudioDataBuffer) {
+						scaleSoundSource.buffer = decodedAudioDataBuffer;
+						scaleSoundSource.loop = true;
+						
+						scaleSoundAnalyser = scaleSoundContext.createAnalyser();
+						scaleSoundAnalyser.smoothingTimeConstant = 0.3;
+						scaleSoundAnalyser.fftSize = 1024;
+						
+						scaleSoundVolume = scaleSoundContext.createGain();
+						scaleSoundVolume.gain.value = 3;
+						
+						scaleSoundSource.connect(scaleSoundAnalyser);
+						scaleSoundAnalyser.connect(scaleSoundVolume);
+						scaleSoundVolume.connect(scaleSoundContext.destination);
+						
+						if (!enableSound) {
+							scaleSoundVolume.gain.value = 0;
+						}
+						
+						scaleSoundSource.start(scaleSoundContext.currentTime);
+						
+						loadingStatus.sound = true;
+					},
+					function(error) {
+						console.error(error);
+					});
+					
+				}
+				else {
+					throw new Error('Couldn\'t load sound file »' + soundUrl + '«.');
+				}
+			}
+		};
+		
+		request.open('GET', soundUrl, true);
+		request.send(null);
 	};
 	
 	
@@ -593,6 +702,8 @@ var Assignment1 = (function() {
 	var loadMeshData = function() {
 		monkeyObj = new WebGLGraphicsObject(gl, ObjectLoader.loadObjDataFromHttp('./obj/Monkey.obj'));
 		sphereObj = new WebGLGraphicsObject(gl, ObjectLoader.loadObjDataFromHttp('./obj/Sphere.obj'));
+		
+		loadingStatus.mesh = true;
 	};
 	
 	/**
@@ -626,6 +737,8 @@ var Assignment1 = (function() {
 	var loadShaders = function() {
 		shaders.vertex.monkey = ShaderLoader.loadShaderFromHttp(gl, './shaders/monkeyVertexShader.glsl', gl.VERTEX_SHADER);
 		shaders.fragment.standard = ShaderLoader.loadShaderFromHttp(gl, './shaders/standardFragmentShader.glsl', gl.FRAGMENT_SHADER);
+		
+		loadingStatus.shaders = true;
 	};
 	
 	/**
@@ -646,6 +759,7 @@ var Assignment1 = (function() {
 		shadersVariables.viewMatrix = gl.getUniformLocation(programs.monkey, 'viewMatrix');
 		
 		shadersVariables.rotation = gl.getUniformLocation(programs.monkey, 'rotation');
+		shadersVariables.scaleFactor = gl.getUniformLocation(programs.monkey, 'scaleFactor');
 		shadersVariables.t = gl.getUniformLocation(programs.monkey, 't');
 		
 		shadersVariables.gFactor = gl.getUniformLocation(programs.monkey, 'gFactor');
@@ -798,6 +912,7 @@ var Assignment1 = (function() {
 		gl.uniform1f(shadersVariables.sinAmplitude, monkeys[1].amp);
 		gl.uniform1f(shadersVariables.sinFrequency, monkeys[1].freq);
 		gl.uniform3fv(shadersVariables.rotation, monkeys[1].rotation);
+		gl.uniform1f(shadersVariables.scaleFactor, monkeys[1].scaleFactor);
 		gl.uniform1f(shadersVariables.gFactor, 1.0);
 		gl.uniform1f(shadersVariables.bFactor, 1.0 / 3.0);
 		gl.uniform3iv(shadersVariables.pickingColor, monkeys[1].pickingColor);
@@ -814,6 +929,7 @@ var Assignment1 = (function() {
 		gl.uniform1f(shadersVariables.sinAmplitude, monkeys[2].amp);
 		gl.uniform1f(shadersVariables.sinFrequency, monkeys[2].freq);
 		gl.uniform3fv(shadersVariables.rotation, monkeys[2].rotation);
+		gl.uniform1f(shadersVariables.scaleFactor, monkeys[2].scaleFactor);
 		gl.uniform1f(shadersVariables.gFactor, 1.0 / 3.0);
 		gl.uniform1f(shadersVariables.bFactor, 1.0);
 		gl.uniform3iv(shadersVariables.pickingColor, monkeys[2].pickingColor);
@@ -908,6 +1024,20 @@ var Assignment1 = (function() {
 		
 		monkeys[1].rotation[1] = (monkeys[1].rotation[1] + (angle * monkeys[1].rotSpeedFac)) % 360;
 		monkeys[2].rotation[1] = (monkeys[2].rotation[1] + (angle * monkeys[2].rotSpeedFac)) % 360;
+		
+		if (enableSound) {
+			var scaleSoundAnalyserData = new Uint8Array(scaleSoundAnalyser.frequencyBinCount);
+			var scaleSoundAnalyserDataSum = 0;
+			
+			scaleSoundAnalyser.getByteFrequencyData(scaleSoundAnalyserData);
+			scaleSoundAnalyserData.forEach(function(value) {
+				scaleSoundAnalyserDataSum += value;
+			});
+			
+			monkeys[1].scaleFactor = ((130.0 - (scaleSoundAnalyserDataSum / scaleSoundAnalyserData.length)) / 100.0) + 0.5;
+			monkeys[2].scaleFactor = monkeys[1].scaleFactor;
+		}	
+		
 		
 		fract = deltaTime / 3000.0;
 		angle = 360 * fract;
