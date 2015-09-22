@@ -113,8 +113,8 @@ var ObjectLoading = (function() {
 	 * Loads and compiles the shaders
 	 */
 	var loadShaders = function() {
-		vertShader = ShaderLoader.loadShaderFromHtml(gl, '#vertex-shader', gl.VERTEX_SHADER);
-		fragShader = ShaderLoader.loadShaderFromHtml(gl, '#fragment-shader', gl.FRAGMENT_SHADER);
+		vertShader = ShaderLoader.loadShaderFromHtml(gl, '#vertex-shader', WebGLRenderingContext.VERTEX_SHADER);
+		fragShader = ShaderLoader.loadShaderFromHtml(gl, '#fragment-shader', WebGLRenderingContext.FRAGMENT_SHADER);
 	};
 	
 	/**
@@ -131,12 +131,12 @@ var ObjectLoading = (function() {
 	 */
 	var loadData = function() {
 		vertBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, WebGLHelper.flattenf32(meshData.vertices), gl.STATIC_DRAW);
+		gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, vertBuffer);
+		gl.bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGLHelper.flattenf32(meshData.vertices), WebGLRenderingContext.STATIC_DRAW);
 		
 		vertIndexBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vertIndexBuffer);
-		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, WebGLHelper.flattenui16(meshData.vertexIndices), gl.STATIC_DRAW);
+		gl.bindBuffer(WebGLRenderingContext.ELEMENT_ARRAY_BUFFER, vertIndexBuffer);
+		gl.bufferData(WebGLRenderingContext.ELEMENT_ARRAY_BUFFER, WebGLHelper.flattenui16(meshData.vertexIndices), WebGLRenderingContext.STATIC_DRAW);
 	};
 	
 	/**
@@ -145,8 +145,8 @@ var ObjectLoading = (function() {
 	var bindShaders = function() {
 		shadersVariables.vPosition = gl.getAttribLocation(program, 'vPosition');
 		
-		gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
-		gl.vertexAttribPointer(shadersVariables.vPosition, 3, gl.FLOAT, false, 0, 0);
+		gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, vertBuffer);
+		gl.vertexAttribPointer(shadersVariables.vPosition, 3, WebGLRenderingContext.FLOAT, false, 0, 0);
 		gl.enableVertexAttribArray(shadersVariables.vPosition);
 	};
 	
@@ -161,8 +161,8 @@ var ObjectLoading = (function() {
 	 * Renders a frame
 	 */
 	var render = function() {
-		gl.clear(gl.COLOR_BUFFER_BIT);
-		gl.drawElements(gl.LINES, meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
+		gl.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
+		gl.drawElements(WebGLRenderingContext.LINES, meshData.vertexIndices.length * 3, WebGLRenderingContext.UNSIGNED_SHORT, 0);
 	};
 	
 	return {

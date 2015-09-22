@@ -99,8 +99,8 @@ var Triangle = (function() {
 	 * Loads and compiles the shaders
 	 */
 	var loadShaders = function() {
-		vertShader = ShaderLoader.loadShaderFromHtml(gl, '#vertex-shader', gl.VERTEX_SHADER);
-		fragShader = ShaderLoader.loadShaderFromHtml(gl, '#fragment-shader', gl.FRAGMENT_SHADER);
+		vertShader = ShaderLoader.loadShaderFromHtml(gl, '#vertex-shader', WebGLRenderingContext.VERTEX_SHADER);
+		fragShader = ShaderLoader.loadShaderFromHtml(gl, '#fragment-shader', WebGLRenderingContext.FRAGMENT_SHADER);
 	};
 	
 	/**
@@ -118,8 +118,8 @@ var Triangle = (function() {
 	var loadData = function() {
 		var bufferID = gl.createBuffer();
 		
-		gl.bindBuffer(gl.ARRAY_BUFFER, bufferID);
-		gl.bufferData(gl.ARRAY_BUFFER, WebGLHelper.flattenf32(meshData), gl.STATIC_DRAW);
+		gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, bufferID);
+		gl.bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGLHelper.flattenf32(meshData), WebGLRenderingContext.STATIC_DRAW);
 	};
 	
 	/**
@@ -128,7 +128,7 @@ var Triangle = (function() {
 	var bindShaders = function() {
 		shadersVariables.vPosition = gl.getAttribLocation(program, 'vPosition');
 		
-		gl.vertexAttribPointer(shadersVariables.vPosition, 2, gl.FLOAT, false, 0, 0);
+		gl.vertexAttribPointer(shadersVariables.vPosition, 2, WebGLRenderingContext.FLOAT, false, 0, 0);
 		gl.enableVertexAttribArray(shadersVariables.vPosition);
 	};
 	
@@ -143,8 +143,8 @@ var Triangle = (function() {
 	 * Renders a frame
 	 */
 	var render = function() {
-		gl.clear(gl.COLOR_BUFFER_BIT);
-		gl.drawArrays(gl.TRIANGLE_STRIP, 0, meshData.length);
+		gl.clear(WebGLRenderingContext.COLOR_BUFFER_BIT);
+		gl.drawArrays(WebGLRenderingContext.TRIANGLE_STRIP, 0, meshData.length);
 	};
 	
 	return {

@@ -661,7 +661,7 @@ var Assignment1 = (function() {
 	 */
 	var initWebGLContext = function() {
 		gl.viewport(0, 0, $canvas.get(0).width, $canvas.get(0).height);
-		gl.enable(gl.DEPTH_TEST);
+		gl.enable(WebGLRenderingContext.DEPTH_TEST);
 		gl.clearColor(1.0, 1.0, 1.0, 1.0);
 	};
 	
@@ -672,21 +672,21 @@ var Assignment1 = (function() {
 		picking.capturedColorMap = new Uint8Array($canvas.get(0).width * $canvas.get(0).height * 4);
 		picking.framebuffer = gl.createFramebuffer();
 		
-		gl.bindFramebuffer(gl.FRAMEBUFFER, picking.framebuffer);
+		gl.bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, picking.framebuffer);
 		
 		var rttTexture = gl.createTexture();
-		gl.bindTexture(gl.TEXTURE_2D, rttTexture);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, $canvas.get(0).width, $canvas.get(0).height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+		gl.bindTexture(WebGLRenderingContext.TEXTURE_2D, rttTexture);
+		gl.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.NEAREST);
+		gl.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.NEAREST);
+		gl.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_WRAP_S, WebGLRenderingContext.CLAMP_TO_EDGE);
+		gl.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_WRAP_T, WebGLRenderingContext.CLAMP_TO_EDGE);
+		gl.texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, $canvas.get(0).width, $canvas.get(0).height, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, null);
 		
 		var renderBuffer = gl.createRenderbuffer();
-		gl.bindRenderbuffer(gl.RENDERBUFFER, renderBuffer);
-		gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, $canvas.get(0).width, $canvas.get(0).height);
-		gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, rttTexture, 0);
-		gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderBuffer);
+		gl.bindRenderbuffer(WebGLRenderingContext.RENDERBUFFER, renderBuffer);
+		gl.renderbufferStorage(WebGLRenderingContext.RENDERBUFFER, WebGLRenderingContext.DEPTH_COMPONENT16, $canvas.get(0).width, $canvas.get(0).height);
+		gl.framebufferTexture2D(WebGLRenderingContext.FRAMEBUFFER, WebGLRenderingContext.COLOR_ATTACHMENT0, WebGLRenderingContext.TEXTURE_2D, rttTexture, 0);
+		gl.framebufferRenderbuffer(WebGLRenderingContext.FRAMEBUFFER, WebGLRenderingContext.DEPTH_ATTACHMENT, WebGLRenderingContext.RENDERBUFFER, renderBuffer);
 		
 		picking.list[buildAddressFromColor(monkeys[1].pickingColor)] = monkeys[1];
 		picking.list[buildAddressFromColor(monkeys[2].pickingColor)] = monkeys[2];
@@ -735,8 +735,8 @@ var Assignment1 = (function() {
 	 * Load shaders by HTTP
 	 */
 	var loadShaders = function() {
-		shaders.vertex.monkey = ShaderLoader.loadShaderFromHttp(gl, './shaders/monkeyVertexShader.glsl', gl.VERTEX_SHADER);
-		shaders.fragment.standard = ShaderLoader.loadShaderFromHttp(gl, './shaders/standardFragmentShader.glsl', gl.FRAGMENT_SHADER);
+		shaders.vertex.monkey = ShaderLoader.loadShaderFromHttp(gl, './shaders/monkeyVertexShader.glsl', WebGLRenderingContext.VERTEX_SHADER);
+		shaders.fragment.standard = ShaderLoader.loadShaderFromHttp(gl, './shaders/standardFragmentShader.glsl', WebGLRenderingContext.FRAGMENT_SHADER);
 		
 		loadingStatus.shaders = true;
 	};
@@ -795,8 +795,8 @@ var Assignment1 = (function() {
 		// monkey colors
 		buffers.monkeyColorBuffer = gl.createBuffer();
 		
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.monkeyColorBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(monkeyColors), gl.STATIC_DRAW);
+		gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, buffers.monkeyColorBuffer);
+		gl.bufferData(WebGLRenderingContext.ARRAY_BUFFER, new Float32Array(monkeyColors), WebGLRenderingContext.STATIC_DRAW);
 		
 		buffers.monkeyColorBuffer.itemSize = 4;
 		buffers.monkeyColorBuffer.numItems = monkeyObj.meshData.vertexIndices.length;
@@ -805,8 +805,8 @@ var Assignment1 = (function() {
 		// sphere colors
 		buffers.sphereColorBuffer = gl.createBuffer();
 		
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.sphereColorBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphereColors), gl.STATIC_DRAW);
+		gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, buffers.sphereColorBuffer);
+		gl.bufferData(WebGLRenderingContext.ARRAY_BUFFER, new Float32Array(sphereColors), WebGLRenderingContext.STATIC_DRAW);
 		
 		buffers.sphereColorBuffer.itemSize = 4;
 		buffers.sphereColorBuffer.numItems = sphereObj.meshData.vertexIndices.length;
@@ -817,7 +817,7 @@ var Assignment1 = (function() {
 	 * Push view matrices to shaders and start render loop
 	 */
 	var startWebGL = function() {
-		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+		gl.bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, null);
 		gl.useProgram(programs.monkey);
 		gl.uniformMatrix4fv(shadersVariables.projectionMatrix, false, projectionMatrix);
 		gl.uniformMatrix4fv(shadersVariables.viewMatrix, false, viewMatrix);
@@ -863,13 +863,13 @@ var Assignment1 = (function() {
 	var pickingRender = function(timestampNow) {
 		picking.doPicking = false;
 		
-		gl.bindFramebuffer(gl.FRAMEBUFFER, picking.framebuffer);
+		gl.bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, picking.framebuffer);
 		gl.uniform1i(shadersVariables.doPickingRender, 1);
 		
 		draw();
 		
 		try {
-			gl.readPixels(0, 0, $canvas.get(0).width, $canvas.get(0).height, gl.RGBA, gl.UNSIGNED_BYTE, picking.capturedColorMap);
+			gl.readPixels(0, 0, $canvas.get(0).width, $canvas.get(0).height, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, picking.capturedColorMap);
 			var color = getColorMapColor(mouseState.currentPosition.x, mouseState.currentPosition.y);
 			var index = buildAddressFromColor(color);
 			
@@ -882,7 +882,7 @@ var Assignment1 = (function() {
 		}
 		finally {
 			gl.uniform1i(shadersVariables.doPickingRender, 0);
-			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+			gl.bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, null);
 		}
 	};
 	
@@ -890,16 +890,16 @@ var Assignment1 = (function() {
 	 * Executes one draw cycle by pushing needed data and drawing the objects.
 	 */
 	var draw = function() {
-		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
+		gl.clear(WebGLRenderingContext.DEPTH_BUFFER_BIT | WebGLRenderingContext.COLOR_BUFFER_BIT);
 		
 		// draw monkey
 		// gl.useProgram(programs.monkey);
 		gl.uniform1i(shadersVariables.isMonkey, 1);
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.monkeyColorBuffer);
-		gl.vertexAttribPointer(shadersVariables.vColor, buffers.monkeyColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-		gl.bindBuffer(gl.ARRAY_BUFFER, monkeyObj.buffers.verticesBuffer);
-		gl.vertexAttribPointer(shadersVariables.vPosition, 3, gl.FLOAT, false, 0, 0);
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, monkeyObj.buffers.vertexIndicesBuffer);
+		gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, buffers.monkeyColorBuffer);
+		gl.vertexAttribPointer(shadersVariables.vColor, buffers.monkeyColorBuffer.itemSize, WebGLRenderingContext.FLOAT, false, 0, 0);
+		gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, monkeyObj.buffers.verticesBuffer);
+		gl.vertexAttribPointer(shadersVariables.vPosition, 3, WebGLRenderingContext.FLOAT, false, 0, 0);
+		gl.bindBuffer(WebGLRenderingContext.ELEMENT_ARRAY_BUFFER, monkeyObj.buffers.vertexIndicesBuffer);
 		
 		
 		gl.uniform3fv(shadersVariables.s1start, spheres[1].transStart);
@@ -916,7 +916,7 @@ var Assignment1 = (function() {
 		gl.uniform1f(shadersVariables.gFactor, 1.0);
 		gl.uniform1f(shadersVariables.bFactor, 1.0 / 3.0);
 		gl.uniform3iv(shadersVariables.pickingColor, monkeys[1].pickingColor);
-		gl.drawElements(gl.TRIANGLES, monkeyObj.meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
+		gl.drawElements(WebGLRenderingContext.TRIANGLES, monkeyObj.meshData.vertexIndices.length * 3, WebGLRenderingContext.UNSIGNED_SHORT, 0);
 		
 		
 		gl.uniform3fv(shadersVariables.s1start, spheres[3].transStart);
@@ -933,45 +933,45 @@ var Assignment1 = (function() {
 		gl.uniform1f(shadersVariables.gFactor, 1.0 / 3.0);
 		gl.uniform1f(shadersVariables.bFactor, 1.0);
 		gl.uniform3iv(shadersVariables.pickingColor, monkeys[2].pickingColor);
-		gl.drawElements(gl.TRIANGLES, monkeyObj.meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
+		gl.drawElements(WebGLRenderingContext.TRIANGLES, monkeyObj.meshData.vertexIndices.length * 3, WebGLRenderingContext.UNSIGNED_SHORT, 0);
 		
 		
 		// draw spheres
 		// gl.useProgram(programs.sphere);
 		gl.uniform1i(shadersVariables.isMonkey, 0);
-		gl.bindBuffer(gl.ARRAY_BUFFER, buffers.sphereColorBuffer);
-		gl.vertexAttribPointer(shadersVariables.vColor, buffers.sphereColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-		gl.bindBuffer(gl.ARRAY_BUFFER, sphereObj.buffers.verticesBuffer);
-		gl.vertexAttribPointer(shadersVariables.vPosition, 3, gl.FLOAT, false, 0, 0);
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereObj.buffers.vertexIndicesBuffer);
+		gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, buffers.sphereColorBuffer);
+		gl.vertexAttribPointer(shadersVariables.vColor, buffers.sphereColorBuffer.itemSize, WebGLRenderingContext.FLOAT, false, 0, 0);
+		gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, sphereObj.buffers.verticesBuffer);
+		gl.vertexAttribPointer(shadersVariables.vPosition, 3, WebGLRenderingContext.FLOAT, false, 0, 0);
+		gl.bindBuffer(WebGLRenderingContext.ELEMENT_ARRAY_BUFFER, sphereObj.buffers.vertexIndicesBuffer);
 		
 		gl.uniform3fv(shadersVariables.sphereTransStart, spheres[1].transStart);
 		gl.uniform3fv(shadersVariables.sphereTransEnd, spheres[1].endTrans);
 		gl.uniform1f(shadersVariables.t, spheres[1].t);
 		gl.uniform3fv(shadersVariables.rotation, spheres[1].rotation);
 		gl.uniform3iv(shadersVariables.pickingColor, spheres[1].pickingColor);
-		gl.drawElements(gl.TRIANGLES, sphereObj.meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
+		gl.drawElements(WebGLRenderingContext.TRIANGLES, sphereObj.meshData.vertexIndices.length * 3, WebGLRenderingContext.UNSIGNED_SHORT, 0);
 		
 		gl.uniform3fv(shadersVariables.sphereTransStart, spheres[2].transStart);
 		gl.uniform3fv(shadersVariables.sphereTransEnd, spheres[2].endTrans);
 		gl.uniform1f(shadersVariables.t, spheres[2].t);
 		gl.uniform3fv(shadersVariables.rotation, spheres[2].rotation);
 		gl.uniform3iv(shadersVariables.pickingColor, spheres[2].pickingColor);
-		gl.drawElements(gl.TRIANGLES, sphereObj.meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
+		gl.drawElements(WebGLRenderingContext.TRIANGLES, sphereObj.meshData.vertexIndices.length * 3, WebGLRenderingContext.UNSIGNED_SHORT, 0);
 		
 		gl.uniform3fv(shadersVariables.sphereTransStart, spheres[3].transStart);
 		gl.uniform3fv(shadersVariables.sphereTransEnd, spheres[3].endTrans);
 		gl.uniform1f(shadersVariables.t, spheres[3].t);
 		gl.uniform3fv(shadersVariables.rotation, spheres[3].rotation);
 		gl.uniform3iv(shadersVariables.pickingColor, spheres[3].pickingColor);
-		gl.drawElements(gl.TRIANGLES, sphereObj.meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
+		gl.drawElements(WebGLRenderingContext.TRIANGLES, sphereObj.meshData.vertexIndices.length * 3, WebGLRenderingContext.UNSIGNED_SHORT, 0);
 		
 		gl.uniform3fv(shadersVariables.sphereTransStart, spheres[4].transStart);
 		gl.uniform3fv(shadersVariables.sphereTransEnd, spheres[4].endTrans);
 		gl.uniform1f(shadersVariables.t, spheres[4].t);
 		gl.uniform3fv(shadersVariables.rotation, spheres[4].rotation);
 		gl.uniform3iv(shadersVariables.pickingColor, spheres[4].pickingColor);
-		gl.drawElements(gl.TRIANGLES, sphereObj.meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
+		gl.drawElements(WebGLRenderingContext.TRIANGLES, sphereObj.meshData.vertexIndices.length * 3, WebGLRenderingContext.UNSIGNED_SHORT, 0);
 	};
 	
 	/**
