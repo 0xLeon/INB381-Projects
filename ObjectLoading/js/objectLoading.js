@@ -113,8 +113,8 @@ var ObjectLoading = (function() {
 	 * Loads and compiles the shaders
 	 */
 	var loadShaders = function() {
-		vertShader = ShaderLoader.loadShaderFromHtml(gl, '#vertex-shader', WebGLRenderingContext.VERTEX_SHADER);
-		fragShader = ShaderLoader.loadShaderFromHtml(gl, '#fragment-shader', WebGLRenderingContext.FRAGMENT_SHADER);
+		vertShader = ShaderLoader.loadShaderFromHtml(gl, $('#vertex-shader'), WebGLRenderingContext.VERTEX_SHADER);
+		fragShader = ShaderLoader.loadShaderFromHtml(gl, $('#fragment-shader'), WebGLRenderingContext.FRAGMENT_SHADER);
 	};
 	
 	/**
