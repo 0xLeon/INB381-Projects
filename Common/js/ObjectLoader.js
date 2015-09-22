@@ -1,9 +1,19 @@
 /**
- * Created by Stefan on 19.08.2015.
+ * Object containing functions to load OBJ data
+ * 
+ * @type	{Object}
  */
 var ObjectLoader = (function() {
 	'use strict';
 	
+	/**
+	 * Parses a given OBJ data string and returns an object containing
+	 * the vertices, the normals and a vertex indices array.
+	 * OBJ object should contain only triangles. Groups etc. are not handled.
+	 * 
+	 * @param	{Object}	objData		OBJ Data String
+	 * @returns	{Object}			Parsed OBJ object
+	 */
 	var parseObjData = function(objData) {
 		if (!objData) {
 			throw new Error('Invalid OBJ data given.');
@@ -82,6 +92,12 @@ var ObjectLoader = (function() {
 		};
 	};
 	
+	/**
+	 * Loads OBJ data from HTTP and returns the parsed OBJ data.
+	 * 
+	 * @param	{String}	url		HTTP location of the OBJ data
+	 * @returns	{Object}			Parsed OBJ data
+	 */
 	var loadObjDataFromHttp = function(url) {
 		if (!url || (url === '')) {
 			throw new Error('Invalid url given.');

@@ -1,9 +1,19 @@
 /**
- * Created by Stefan on 19.08.2015.
+ * Object containing functions to load and compile shaders
+ * 
+ * @type	{Object}
  */
 var ShaderLoader = (function() {
 	'use strict';
 	
+	/**
+	 * Handles a shader source code and compiles the shader with the given type.
+	 * 
+	 * @param	{WebGLRenderingContext}	gl		The WebGL context
+	 * @param	{String}		shaderSource	Shader source code 
+	 * @param	{Number}		shaderType	WebGL shader type
+	 * @returns	{WebGLShader}				Compiled WebGL shader object
+	 */
 	var handleShader = function(gl, shaderSource, shaderType) {
 		// TODO: check parameters
 		var shader = gl.createShader(shaderType);
@@ -18,6 +28,14 @@ var ShaderLoader = (function() {
 		return shader;
 	};
 	
+	/**
+	 * Loads a shader source from the DOM and compiles this shader source.
+	 * 
+	 * @param	{WebGLRenderingContext}	gl		The WebGL context
+	 * @param	{jQuery}		shaderNode	The script node containing the shader source
+	 * @param	{Number}		shaderType	WebGL shader type
+	 * @returns	{WebGLShader}				Compiled WebGL shader object
+	 */
 	var loadShaderFromHtml = function(gl, shaderNode, shaderType) {
 		// TODO: check parameters
 		shaderNode = $(shaderNode);
@@ -30,6 +48,14 @@ var ShaderLoader = (function() {
 		}
 	};
 	
+	/**
+	 * Loads a shader source from HTTP and compiles this shader source.
+	 * 
+	 * @param	{WebGLRenderingContext}	gl		The WebGL context
+	 * @param	{String}		shaderLocation	HTTP location of the shader
+	 * @param	{Number}		shaderType	WebGL shader type
+	 * @returns	{WebGLShader}				Compiled WebGL shader object
+	 */
 	var loadShaderFromHttp = function(gl, shaderLocation, shaderType) {
 		// TODO: check parameters
 		var shaderSource = null;
@@ -53,7 +79,14 @@ var ShaderLoader = (function() {
 		return handleShader(gl, shaderSource, shaderType);
 	};
 	
-	var linkProgram = function(gl) {
+	/**
+	 * Takes any amount of WebGL shaders and returns a linked WebGL program.
+	 * 
+	 * @param	{WebGLRenderingContext}	gl		The WebGL context
+	 * @param	{...WebGLShader}	shaderObjects	Unlimited number of WebGL shader objects
+	 * @returns	{WebGLProgram}				Linked WebGL shader program
+	 */
+	var linkProgram = function(gl, shaderObjects) {
 		if (!gl) {
 			throw new Error('Invalid WebGL context.');
 		}

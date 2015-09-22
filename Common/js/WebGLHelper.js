@@ -1,11 +1,20 @@
 /**
- * Created by Stefan on 19.08.2015.
+ * Object containing util functions for WebGL applications
+ * 
+ * @type	{Object}
  */
 var WebGLHelper = (function() {
 	'use strict';
 	
 	var webglContextNames = ['webgl', 'moz-webgl', 'webkit-webgl', 'experimental-webgl'];
 	
+	/**
+	 * Takes a canvas node and returns its WebGL rendering context.
+	 * 
+	 * @param	{jQuery}		canvasNode
+	 * @param	{...Object}		options		Additional options
+	 * @returns	{WebGLRenderingContext}			The WebGL rendering context of the canvas node
+	 */
 	var createContext = function(canvasNode, options) {
 		if (!window.WebGLRenderingContext) {
 			throw new Error('WebGL not supported.');
@@ -34,6 +43,14 @@ var WebGLHelper = (function() {
 		}
 	};
 	
+	/**
+	 * Flattens a given numeric array input to be used with WebGL buffers.
+	 * 
+	 * @param	{Array|TypedArray}	values		Array or array of arays containing the values
+	 * @param	{function}		__targetType	Target typed array type
+	 * @returns	{TypedArray}				Falltened verion of the inputted values
+	 * @private
+	 */
 	var __flatten = function(values, __targetType) {
 		if (!(values instanceof Array) && !(values instanceof glMatrix.ARRAY_TYPE)) {
 			throw new TypeError('Invalid parameter.');

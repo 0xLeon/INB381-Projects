@@ -1,17 +1,76 @@
+/**
+ * Object representing the assignment 1 application
+ * 
+ * @type	{Object}
+ */
 var Assignment1 = (function() {
+	/**
+	 * Canvas node
+	 * 
+	 * @type	{jQuery}
+	 */
 	var $canvas = null;
+	
+	/**
+	 * WebGL rendering context
+	 * 
+	 * @type	{WebGLRenderingContext}
+	 */
 	var gl = null;
 	
+	/**
+	 * Projection matrix
+	 * 
+	 * @type	{mat4}
+	 */
 	var projectionMatrix = mat4.create();
+	
+	/**
+	 * View matrix
+	 * @type	{mat4}
+	 */
 	var viewMatrix = mat4.create();
+	
+	/**
+	 * Multiplied view and projection matrix
+	 * 
+	 * @type	{mat4}
+	 */
 	var finalViewMatrix = mat4.create();
 	
+	/**
+	 * Monkey WebGL graphics object
+	 * 
+	 * @type	{WebGLGraphicsObject}
+	 */
 	var monkeyObj = null;
+	
+	/**
+	 * Per vertex colors for monkey object
+	 * 
+	 * @type	{Array.<number>}
+	 */
 	var monkeyColors = [];
 	
+	/**
+	 * Sphere WebGL graphics object
+	 * 
+	 * @type	{WebGLGraphicsObject}
+	 */
 	var sphereObj = null;
+	
+	/**
+	 * Per vertex colors for sphere object
+	 * 
+	 * @type	{Array.<number>}
+	 */
 	var sphereColors = [];
 	
+	/**
+	 * Object containing each monkey and its attributes
+	 * 
+	 * @type	{Object}
+	 */
 	var monkeys = {
 		1: {
 			direction:	1,
@@ -39,6 +98,11 @@ var Assignment1 = (function() {
 		}
 	};
 	
+	/**
+	 * Object containing each sphere and its attributes
+	 * 
+	 * @type	{Object}
+	 */
 	var spheres = {
 		1: {
 			index:		1,
@@ -94,21 +158,34 @@ var Assignment1 = (function() {
 		}
 	};
 	
+	/**
+	 * Object containing all WebGL programs for this application
+	 * 
+	 * @type	{Object}
+	 */
 	var programs = {
-		monkey:		null,
-		spheres:	null
+		monkey:		null
 	};
 	
+	/**
+	 * Object containing all WebGL shaders for this application
+	 * 
+	 * @type	{Object}
+	 */
 	var shaders = {
 		vertex:	{
-			monkey:		null,
-			spheres:	null
+			monkey:		null
 		},
 		fragment: {
 			standard:	null
 		}
 	};
 	
+	/**
+	 * Object containing all WebGL shader variables locations for the used shaders
+	 * 
+	 * @type	{Object}
+	 */
 	var shadersVariables = {
 		vPosition:		null,
 		vColor:			null,
@@ -139,11 +216,21 @@ var Assignment1 = (function() {
 		pickingColor:		null
 	};
 	
+	/**
+	 * Object containing additionally used WebGL buffers
+	 * 
+	 * @type	{Object}
+	 */
 	var buffers = {
 		monkeyColorBuffer:		null,
 		sphereColorBuffer:		null
 	};
 	
+	/**
+	 * Object keeping track of the picking state and list
+	 * 
+	 * @type	{Object}
+	 */
 	var picking = {
 		doPicking:		false,
 		capturedColorMap:	null,
@@ -151,6 +238,11 @@ var Assignment1 = (function() {
 		list:			{}
 	};
 	
+	/**
+	 * Object keeping track of the mouse state and dragging
+	 * 
+	 * @type	{Object}
+	 */
 	var mouseState = {
 		altKey:			false,
 		currentPosition: {
@@ -163,17 +255,61 @@ var Assignment1 = (function() {
 		}
 	};
 	
+	/**
+	 * Timestamp to keep track of elapsed time for animation
+	 * 
+	 * @type	{number}
+	 */
 	var lastTime = window.performance.now();
+	
+	/**
+	 * Time delta between two animation function calls
+	 * 
+	 * @type	{number}
+	 */
 	var elapsedTime = 0;
 	
+	/**
+	 * jQuery object to access the fps value node
+	 * 
+	 * @type	{jQuery}
+	 */
 	var $fpsValue = null;
+	
+	/**
+	 * Current frame count between two cycles
+	 * 
+	 * @type	{number}
+	 */
 	var framecount = 0;
+	
+	/**
+	 * Current fps value
+	 * 
+	 * @type	{number}
+	 */
 	var fps = 0;
 	
+	/**
+	 * jQuery object to access the sound chackbox
+	 * 
+	 * @type	{jQuery}
+	 */
 	var $soundCheckbox = null;
+	
+	/**
+	 * Current sound state
+	 * 
+	 * @type	{boolean}
+	 */
 	var enableSound = true;
 	
 	
+	/**
+	 * Constructor initializing all needed stuff and starting rendering
+	 * 
+	 * @param	{jQuery}	canvas		The used canvas node
+	 */
 	var init = function(canvas) {
 		$canvas = $(canvas);
 		
@@ -209,6 +345,9 @@ var Assignment1 = (function() {
 	};
 	
 	
+	/**
+	 * Initializes the view and projection matrices
+	 */
 	var initViewMatrices = function() {
 		mat4.perspective(projectionMatrix, Math.PI / 4, $canvas.get(0).width / $canvas.get(0).height, 1, 100000);
 		mat4.lookAt(viewMatrix, vec3.fromValues(0, 0, -8), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
@@ -216,6 +355,9 @@ var Assignment1 = (function() {
 	};
 	
 	
+	/**
+	 * Initializes the fps measurment
+	 */
 	var initFps = function() {
 		$fpsValue = $('#fps-value');
 		
@@ -224,6 +366,9 @@ var Assignment1 = (function() {
 		}, 1000);
 	};
 	
+	/**
+	 * Initializes the monkey and sphere sliders
+	 */
 	var initSliders = function() {
 		for (var j = 1; j < 3; ++j) {
 			var sliderAmp = $('#monkey' + j.toString(10) + '-amp');
@@ -262,6 +407,9 @@ var Assignment1 = (function() {
 		}
 	};
 	
+	/**
+	 * Initializes the monkey speed buttons
+	 */
 	var initButtons = function() {
 		for (var i = 1; i < 3; ++i) {
 			var buttonUp = $('#monkey' + i.toString(10) + '-up');
@@ -288,6 +436,9 @@ var Assignment1 = (function() {
 		}
 	};
 	
+	/**
+	 * Setting up event listeners to keep track of alt key
+	 */
 	var initMouseState = function() {
 		$(document).on('keydown', function(event) {
 			if (18 === event.keyCode) {
@@ -301,6 +452,9 @@ var Assignment1 = (function() {
 		})
 	};
 	
+	/**
+	 * Setting up event listeners to enable and keep track of dragging
+	 */
 	var initDragging = function() {
 		$canvas.on('mousedown', function(event) {
 			mouseState.currentPosition.x = event.pageX - $(this).offset().left - (parseInt($(this).css('borderLeftWidth'), 10) || 0) - (parseInt($(this).css('paddingLeft'), 10) || 0);
@@ -339,6 +493,9 @@ var Assignment1 = (function() {
 		});
 	};
 	
+	/**
+	 * Initializes bounce sound
+	 */
 	var initSound = function() {
 		$soundCheckbox = $('#enable-sound');
 		enableSound = $soundCheckbox.is(':checked');
@@ -349,6 +506,9 @@ var Assignment1 = (function() {
 	};
 	
 	
+	/**
+	 * Setting up additional attributes of monkey objects
+	 */
 	var initMonkeys = function() {
 		for (var i = 1; i < 3; ++i) {
 			monkeys[i].onpick = monkeyPick;
@@ -356,6 +516,9 @@ var Assignment1 = (function() {
 		}
 	};
 	
+	/**
+	 * Stting up additional attributrs of sphere objects
+	 */
 	var initSpheres = function() {
 		for (var i = 1; i < 5; ++i) {
 			spheres[i].minScreen = vec4.transformMat4(vec4.create(), vec4.fromValues(spheres[i].transStart[0], spheres[i].transStart[1], spheres[i].transStart[2], 1.0), finalViewMatrix);
@@ -384,12 +547,18 @@ var Assignment1 = (function() {
 	};
 	
 	
+	/**
+	 * Setting up the WebGL context and viewport
+	 */
 	var initWebGLContext = function() {
 		gl.viewport(0, 0, $canvas.get(0).width, $canvas.get(0).height);
 		gl.enable(gl.DEPTH_TEST);
 		gl.clearColor(1.0, 1.0, 1.0, 1.0);
 	};
 	
+	/**
+	 * Initializes needed framebuffer, texture and picking list for picking
+	 */
 	var initPicking = function() {
 		picking.capturedColorMap = new Uint8Array($canvas.get(0).width * $canvas.get(0).height * 4);
 		picking.framebuffer = gl.createFramebuffer();
@@ -418,11 +587,17 @@ var Assignment1 = (function() {
 		picking.list[buildAddressFromColor(spheres[4].pickingColor)] = spheres[4];
 	};
 	
+	/**
+	 * Load mesh data objects by HTTP for monkey and sphere
+	 */
 	var loadMeshData = function() {
 		monkeyObj = new WebGLGraphicsObject(gl, ObjectLoader.loadObjDataFromHttp('./obj/Monkey.obj'));
 		sphereObj = new WebGLGraphicsObject(gl, ObjectLoader.loadObjDataFromHttp('./obj/Sphere.obj'));
 	};
 	
+	/**
+	 * Generate color per vertex data for monkey and sphere
+	 */
 	var makeColorData = function() {
 		var arrayPush = Array.prototype.push;
 		
@@ -445,15 +620,24 @@ var Assignment1 = (function() {
 		}
 	};
 	
+	/**
+	 * Load shaders by HTTP
+	 */
 	var loadShaders = function() {
 		shaders.vertex.monkey = ShaderLoader.loadShaderFromHttp(gl, './shaders/monkeyVertexShader.glsl', gl.VERTEX_SHADER);
 		shaders.fragment.standard = ShaderLoader.loadShaderFromHttp(gl, './shaders/standardFragmentShader.glsl', gl.FRAGMENT_SHADER);
 	};
 	
+	/**
+	 * Link all used shader programs
+	 */
 	var linkProgram = function() {
 		programs.monkey = ShaderLoader.linkProgram(gl, shaders.vertex.monkey, shaders.fragment.standard);
 	};
 	
+	/**
+	 * Locate all used shaders variables
+	 */
 	var locateShadersVariables = function() {
 		shadersVariables.vPosition = gl.getAttribLocation(programs.monkey, 'vPosition');
 		shadersVariables.vColor = gl.getAttribLocation(programs.monkey, 'vColor');
@@ -490,6 +674,9 @@ var Assignment1 = (function() {
 		gl.enableVertexAttribArray(shadersVariables.vColor);
 	};
 	
+	/**
+	 * Initializes buffers for color per vertex data
+	 */
 	var initColorBuffer = function() {
 		// monkey colors
 		buffers.monkeyColorBuffer = gl.createBuffer();
@@ -512,6 +699,9 @@ var Assignment1 = (function() {
 	};
 	
 	
+	/**
+	 * Push view matrices to shaders and start render loop
+	 */
 	var startWebGL = function() {
 		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		gl.useProgram(programs.monkey);
@@ -522,6 +712,11 @@ var Assignment1 = (function() {
 		window[WebGLHelper.requestAnimationFrame](render);
 	};
 	
+	/**
+	 * Executes one render cycle by drawing and then animating
+	 * 
+	 * @param	{number}	timestampNow	High resolution timestamp
+	 */
 	var render = function(timestampNow) {
 		if (picking.doPicking) {
 			pickingRender(timestampNow);
@@ -545,6 +740,12 @@ var Assignment1 = (function() {
 		window[WebGLHelper.requestAnimationFrame](render);
 	};
 	
+	/**
+	 * Does a picking render by setting the correct shader state, drawing and
+	 * then finding the picked object by color.
+	 * 
+	 * @param	{number}	timestampNow	High resolution timestamp
+	 */
 	var pickingRender = function(timestampNow) {
 		picking.doPicking = false;
 		
@@ -571,6 +772,9 @@ var Assignment1 = (function() {
 		}
 	};
 	
+	/**
+	 * Executes one draw cycle by pushing needed data and drawing the objects.
+	 */
 	var draw = function() {
 		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 		
@@ -654,6 +858,12 @@ var Assignment1 = (function() {
 		gl.drawElements(gl.TRIANGLES, sphereObj.meshData.vertexIndices.length * 3, gl.UNSIGNED_SHORT, 0);
 	};
 	
+	/**
+	 * Animate all animating objects
+	 * 
+	 * @param	{number}	timestampNow	High resolution timestamp
+	 * @param	{number}	deltaTime	High resolution timestamp delta between now and last animation cycle
+	 */
 	var animate = function(timestampNow, deltaTime) {
 		monkeys[1].t += monkeys[1].direction * monkeys[1].transSpeedFac;
 		
@@ -708,6 +918,15 @@ var Assignment1 = (function() {
 	};
 	
 	
+	/**
+	 * Generates a RGB color array from a given mouse position and caputes picking color map.
+	 * Origin of mouse position is the lower left due to WebGL texture coordinates.
+	 * This function converts the y value from upper-left origin to lower-left origin.
+	 * 
+	 * @param	{number}	x	Horizontal mouse position
+	 * @param	{number}	y	Vertical mouse position
+	 * @returns	{number[]}		RGB array of given mouse position on color map
+	 */
 	var getColorMapColor = function(x, y) {
 		if ((x < 0) || (y < 0) || (x > $canvas.get(0).width) || (y > $canvas.get(0).height)) {
 			throw new Error('Invalid color map location.');
@@ -722,10 +941,20 @@ var Assignment1 = (function() {
 		return [picking.capturedColorMap[startAddress], picking.capturedColorMap[startAddress + 1], picking.capturedColorMap[startAddress + 2]];
 	};
 	
+	/**
+	 * Takes a RGB color array and generates a unique number for this color
+	 * 
+	 * @param	{number[]}	color	RGB color array
+	 * @returns	{number}		Unique color ID for this color
+	 */
 	var buildAddressFromColor = function(color) {
 		return color[0] * 65536 + color[1] * 256 + color[2];
 	};
 	
+	/**
+	 * onpick listener for sphere starting dragging on this sphere if there
+	 * is no other dragged sphere.
+	 */
 	var sphereStartDrag = function() {
 		if (!mouseState.dragging.element) {
 			mouseState.dragging.element = this;
@@ -733,6 +962,11 @@ var Assignment1 = (function() {
 		}
 	};
 	
+	/**
+	 * onpick listener for monkeys. Changes speed on pick.
+	 * If it's a normal pick, speed is increased.
+	 * If the alt key was pressed additionally, speed is decreased.
+	 */
 	var monkeyPick = function() {
 		if (mouseState.altKey) {
 			this.transSpeedFac -= 1;
@@ -751,6 +985,12 @@ var Assignment1 = (function() {
 	};
 	
 	
+	/**
+	 * Returns sphere position in clip coordinates
+	 * 
+	 * @param	{Object}	sphere		Sphere object
+	 * @returns	{vec3}				Position of sphere in clip coordinates
+	 */
 	var getSpherePosition = function(sphere) {
 		var spherePos = vec3.lerp(vec3.create(), sphere.transStart, sphere.endTrans, sphere.t / 1000.0);
 		
