@@ -14,7 +14,7 @@ var ObjectLoader = (function() {
 		var vertices = [];
 		var normals = [];
 		var vertexIndices = [];
-		var normalIndices = [];
+		var normalsPerVertex = [];
 		var f1 = null;
 		var f2 = null;
 		var f3 = null;
@@ -54,11 +54,14 @@ var ObjectLoader = (function() {
 							(parseInt(f2[0]) - 1),
 							(parseInt(f3[0]) - 1)
 						]);
-						normalIndices.push([
-							(parseInt(f1[2]) - 1),
-							(parseInt(f2[2]) - 1),
-							(parseInt(f3[2]) - 1)
-						]);
+						
+						normalsPerVertex.push(
+							(normals[(parseInt(f1[2]) - 1)]));
+						normalsPerVertex.push(
+							(normals[(parseInt(f2[2]) - 1)]));
+						normalsPerVertex.push(
+							(normals[(parseInt(f3[2]) - 1)])
+						);
 						
 						break;
 				}
@@ -66,11 +69,11 @@ var ObjectLoader = (function() {
 		}
 		
 		return {
-			primitiveType:	WebGLRenderingContext.TRIANGLES,
-			vertices:	vertices,
-			normals:	normals,
-			vertexIndices:	vertexIndices,
-			normalIndices:	normalIndices,
+			primitiveType:		WebGLRenderingContext.TRIANGLES,
+			vertices:		vertices,
+			normals:		normals,
+			vertexIndices:		vertexIndices,
+			normalsPerVertex:	normalsPerVertex,
 			material:	{
 				ambient:	0.2,
 				diffuse:	0.5,
