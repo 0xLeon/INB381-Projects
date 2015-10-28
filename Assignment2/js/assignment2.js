@@ -128,8 +128,8 @@ var Assignment2 = (function() {
 	 * Initializes the view and projection matrices
 	 */
 	var initViewMatrices = function() {
-		mat4.perspective(projectionMatrix, Math.PI / 4, $canvas.get(0).width / $canvas.get(0).height, 1, 100000);
-		mat4.lookAt(viewMatrix, vec3.fromValues(0, 0, -8), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
+		mat4.perspective(projectionMatrix, Math.PI / 4, $canvas.get(0).width / $canvas.get(0).height, 0.1, 1000);
+		mat4.lookAt(viewMatrix, vec3.fromValues(0, 5, -30), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
 	};
 	
 	/**
