@@ -138,7 +138,7 @@ var Assignment2 = (function() {
 	var initWebGLContext = function() {
 		gl.viewport(0, 0, $canvas.get(0).width, $canvas.get(0).height);
 		gl.enable(WebGLRenderingContext.DEPTH_TEST);
-		gl.clearColor(0.0, 0.0, 0.0, 1.0);
+		gl.clearColor(0.5, 0.5, 0.5, 1.0);
 	};
 	
 	
