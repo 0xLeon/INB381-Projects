@@ -26,13 +26,6 @@ var Assignment2 = (function() {
 	 */
 	var viewMatrix = mat4.create();
 	
-	/**
-	 * Multiplied view and projection matrix
-	 *
-	 * @type	{mat4}
-	 */
-	var finalViewMatrix = mat4.create();
-	
 	var loadingStatus = {
 		shaders:	false,
 		mesh:		false
@@ -103,7 +96,6 @@ var Assignment2 = (function() {
 	var initViewMatrices = function() {
 		mat4.perspective(projectionMatrix, Math.PI / 4, $canvas.get(0).width / $canvas.get(0).height, 1, 100000);
 		mat4.lookAt(viewMatrix, vec3.fromValues(0, 0, -8), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
-		mat4.multiply(finalViewMatrix, projectionMatrix, viewMatrix);
 	};
 	
 	/**
