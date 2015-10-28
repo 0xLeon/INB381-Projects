@@ -190,8 +190,28 @@ var Assignment2 = (function() {
 		
 	};
 	
+	/**
+	 *
+	 * @returns	{WebGLRenderingContext}
+	 */
+	var getGL = function() {
+		return gl;
+	};
+	
+	var getModelViewMatrix = function() {
+		return viewMatrix;
+	};
+	
+	var getShaderVariable = function(name) {
+		return shadersVariables[name];
+	};
+	
 	return {
-		init:	init
+		init:			init,
+		
+		getGL:			getGL,
+		getModelViewMatrix:	getModelViewMatrix,
+		getShaderVariable:	getShaderVariable
 	};
 })();
 
