@@ -31,23 +31,26 @@ var Assignment2 = (function() {
 		mesh:		false
 	};
 	
-	var birdMeshes = {
-		body:	null,
-		wing:	null
-	};
-	
 	var shaders = {
 		vertex:		null,
 		fragment:	null
 	};
 	
 	var shadersVariables = {
+		vPosition:		null,
+		vNormal:		null,
 		projectionMatrix:	null,
 		viewMatrix:		null,
 		mode:			null
 	};
 	
 	var program = null;
+	
+	/**
+	 *
+	 * @type {Bird}
+	 */
+	var bird = null;
 	
 	/**
 	 * Timestamp to keep track of elapsed time for animation
@@ -155,8 +158,11 @@ var Assignment2 = (function() {
 	 * Load mesh data objects by HTTP for monkey and sphere
 	 */
 	var loadMeshData = function() {
-		birdMeshes.body = new WebGLGraphicsObject(gl, ObjectLoader.loadObjDataFromHttp('./obj/Bird-Body.obj'));
-		birdMeshes.wing = new WebGLGraphicsObject(gl, ObjectLoader.loadObjDataFromHttp('./obj/Bird-Wing.obj'));
+		bird = new Bird({
+			getGL:			getGL,
+			getModelViewMatrix:	getModelViewMatrix,
+			getShaderVariable:	getShaderVariable
+		});
 		
 		loadingStatus.mesh = true;
 	};
@@ -182,10 +188,16 @@ var Assignment2 = (function() {
 	 * Locate all used shaders variables
 	 */
 	var locateShadersVariables = function() {
+		shadersVariables.vPosition = gl.getAttribLocation(program, 'vPosition');
+		shadersVariables.vNormal = gl.getAttribLocation(program, 'vNormal');
+		
 		shadersVariables.projectionMatrix = gl.getUniformLocation(program, 'projectionMatrix');
 		shadersVariables.viewMatrix = gl.getUniformLocation(program, 'viewMatrix');
 		
 		shadersVariables.mode = gl.getUniformLocation(program, 'mode');
+		
+		gl.enableVertexAttribArray(shadersVariables.vPosition);
+		gl.enableVertexAttribArray(shadersVariables.vNormal);
 	};
 	
 	
@@ -229,6 +241,8 @@ var Assignment2 = (function() {
 	 */
 	var draw = function() {
 		gl.clear(WebGLRenderingContext.DEPTH_BUFFER_BIT | WebGLRenderingContext.COLOR_BUFFER_BIT);
+		
+		bird.render();
 	};
 	
 	/**
