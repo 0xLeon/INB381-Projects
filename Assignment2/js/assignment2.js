@@ -102,6 +102,8 @@ var Assignment2 = (function() {
 		sliding:	false
 	};
 	
+	var groundObj = null;
+	
 	/**
 	 * Constructor initializing all needed stuff and starting rendering
 	 *
@@ -220,6 +222,8 @@ var Assignment2 = (function() {
 			getShaderVariable:	getShaderVariable
 		});
 		
+		groundObj = new WebGLGraphicsObject(gl, ObjectLoader.loadObjDataFromHttp('./obj/BirdGround.obj'));
+		
 		loadingStatus.mesh = true;
 	};
 	
@@ -299,6 +303,14 @@ var Assignment2 = (function() {
 		gl.clear(WebGLRenderingContext.DEPTH_BUFFER_BIT | WebGLRenderingContext.COLOR_BUFFER_BIT);
 		
 		bird.render();
+		
+		gl.uniform1i(shadersVariables.mode, 1);
+		gl.uniformMatrix4fv(shadersVariables.viewMatrix, false, viewMatrix);
+		gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, groundObj.buffers.verticesBuffer);
+		gl.vertexAttribPointer(shadersVariables.vPosition, 3, WebGLRenderingContext.FLOAT, false, 0, 0);
+		gl.bindBuffer(WebGLRenderingContext.ELEMENT_ARRAY_BUFFER, groundObj.buffers.vertexIndicesBuffer);
+		gl.drawElements(WebGLRenderingContext.TRIANGLES, groundObj.meshData.vertexIndices.length * 3, WebGLRenderingContext.UNSIGNED_SHORT, 0);
+		
 	};
 	
 	var d1 = 0.0175 * 2.5;

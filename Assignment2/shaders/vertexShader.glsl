@@ -33,7 +33,13 @@ void renderBird(void) {
 }
 
 void renderFloor(void) {
+	gl_Position = projectionMatrix * (viewMatrix * vec4(vPosition.x, vPosition.y - 10.0, vPosition.z, 1.0));
+	highp float colorR = 0.7 * rand(vPosition.xy);
+	highp float colorG = 0.7 * rand(vPosition.xz);
+	highp float colorB = 0.7 * rand(vPosition.yz);
 	
+	fColor = vec4(colorR, colorG, colorB, 1.0);
+	// fSeed = vec2(vPosition.xy);
 }
 
 void main() {
