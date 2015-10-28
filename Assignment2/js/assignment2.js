@@ -313,11 +313,10 @@ var Assignment2 = (function() {
 		
 	};
 	
-	var d1 = 0.0175 * 2.5;
-	var s = 0.2;
 	
-	var motionVector = vec2.create();
-	var deltaTurn = 0;
+	var wingsFlapRotationVelocity = 0.04375;
+	var forwardMovementVelocity = 0.2;
+	var spiralRotationVelocity = 0;
 	
 	/**
 	 * Animate all animating objects
@@ -326,138 +325,133 @@ var Assignment2 = (function() {
 	 * @param	{number}	deltaTime	High resolution timestamp delta between now and last animation cycle
 	 */
 	var animate = function(timestampNow, deltaTime) {
-		// bird.getTree().body.localRotation[1] = (bird.getTree().body.localRotation[1] + 0.0175) % (Math.PI * 2);
-		
 		var birdX = bird.getTree().root.worldTransform[12];
 		var birdY = bird.getTree().root.worldTransform[13];
 		var birdZ = bird.getTree().root.worldTransform[14];
 		
-		if (birdY > -7) {
-			if (keyState.z && !birdStates.spiraling) {
+		var birdMotionVector = vec2.fromValues(Math.sin(bird.getTree().body.localRotation[1]), Math.cos(bird.getTree().body.localRotation[1]));
+		var birdTranslation = vec3.create();
+		
+		if ((birdY > -7) && !(birdStates.crashing || birdStates.spiraling)) {
+			if (keyState.z) {
 				birdStates.crashing = true;
 			}
-			
-			if (keyState.x && !birdStates.spiraling && !birdStates.spiraling) {
+			else if (keyState.x) {
 				birdStates.spiraling = true;
-				deltaTurn = 0;
-				s = 0.2;
+				spiralRotationVelocity = 0;
+				forwardMovementVelocity = 0.2;
 			}
 		}
 		
 		if (birdStates.crashing) {
-			mat4.multiply(
-				bird.getTree().root.worldTransform,
-				mat4.fromTranslation(mat4.create(), vec3.fromValues(0, -.5, 0)),
-				bird.getTree().root.worldTransform
-			);
+			vec3.set(birdTranslation, 0, -0.5, 0);
 			
 			if (birdY < -7) {
 				birdStates.crashing = false;
-				s = 0;
+				forwardMovementVelocity = 0;
 			}
 		}
 		else if (birdStates.spiraling) {
-			var deltaY = -.02;
-			deltaTurn += 0.0007;
-			
+			spiralRotationVelocity += 0.0007;
 			
 			if (birdY > -7) {
-				s += 0.0004;
+				forwardMovementVelocity += 0.0004;
 				
-				bird.getTree().body.localRotation[1] += deltaTurn;
+				bird.getTree().body.localRotation[1] += spiralRotationVelocity;
 				
-				motionVector[0] = Math.sin(bird.getTree().body.localRotation[1]);
-				motionVector[1] = Math.cos(bird.getTree().body.localRotation[1]);
+				birdMotionVector[0] = Math.sin(bird.getTree().body.localRotation[1]);
+				birdMotionVector[1] = Math.cos(bird.getTree().body.localRotation[1]);
+				
+				birdTranslation[1] = -0.02;
 			}
 			else {
-				s -= 0.005;
+				forwardMovementVelocity -= 0.005;
 				
-				if (s <= 0) {
-					s = 0;
+				if (forwardMovementVelocity <= 0) {
+					forwardMovementVelocity = 0;
 				}
 			}
 			
-			if (birdY < -7) {
-				deltaY = 0;
-			}
-			
-			mat4.multiply(
-				bird.getTree().root.worldTransform,
-				mat4.fromTranslation(mat4.create(), vec3.fromValues(s * motionVector[0], deltaY, s * motionVector[1])),
-				bird.getTree().root.worldTransform
+			vec3.set(
+				birdTranslation,
+				forwardMovementVelocity * birdMotionVector[0],
+				birdTranslation[1],
+				forwardMovementVelocity * birdMotionVector[1]
 			);
 			
-			bird.getTree().leftUpperWing.localRotation[2] += d1;
-			bird.getTree().rightUpperWing.localRotation[2] += d1;
-			bird.getTree().leftLowerWing.localRotation[2] += d1;
-			bird.getTree().rightLowerWing.localRotation[2] += -d1;
-			
-			if ((bird.getTree().leftUpperWing.localRotation[2] >= (Math.PI * 25 / 180)) || (bird.getTree().leftUpperWing.localRotation[2] <= (Math.PI * -25 / 180))) {
-				d1 *= -1;
-			}
-			
-			if (Math.abs(s) < 0.00001) {
+			if (Math.abs(forwardMovementVelocity) < 0.000001) {
 				birdStates.spiraling = false;
-				s = 0;
+				forwardMovementVelocity = 0;
 			}
 		}
 		else {
 			if (keyState.s) {
-				s = .2;
+				forwardMovementVelocity = 0.2;
 			}
 			
 			if (keyState.a) {
-				bird.getTree().body.localRotation[1] += 0.0175 * 2;
+				bird.getTree().body.localRotation[1] += 0.035;
+				
+				birdMotionVector[0] = Math.sin(bird.getTree().body.localRotation[1]);
+				birdMotionVector[1] = Math.cos(bird.getTree().body.localRotation[1]);
 			}
 			
 			if (keyState.d) {
-				bird.getTree().body.localRotation[1] -= 0.0175 * 2;
+				bird.getTree().body.localRotation[1] -= 0.035;
+				
+				birdMotionVector[0] = Math.sin(bird.getTree().body.localRotation[1]);
+				birdMotionVector[1] = Math.cos(bird.getTree().body.localRotation[1]);
 			}
 			
-			
-			motionVector[0] = Math.sin(bird.getTree().body.localRotation[1]);
-			motionVector[1] = Math.cos(bird.getTree().body.localRotation[1]);
-			
 			if ((Math.abs(birdX) > (.675 * (birdZ + 20) + 5))) {
-				motionVector[1] = 0;
+				birdMotionVector[1] = 0;
 				
 				if (birdX < 0) {
-					motionVector[0] = 1;
+					birdMotionVector[0] = 1;
 				}
 				else {
-					motionVector[0] = -1;
+					birdMotionVector[0] = -1;
 				}
 				
-				bird.getTree().body.localRotation[1] = Math.atan2(motionVector[0], motionVector[1]);
+				bird.getTree().body.localRotation[1] = Math.atan2(birdMotionVector[0], birdMotionVector[1]);
 			}
 			
 			if ((birdZ <= -20) || (birdZ >= 50)) {
-				motionVector[1] *= -1;
+				birdMotionVector[1] *= -1;
 				
-				bird.getTree().body.localRotation[1] = Math.atan2(motionVector[0], motionVector[1]);
+				bird.getTree().body.localRotation[1] = Math.atan2(birdMotionVector[0], birdMotionVector[1]);
 			}
 			
-			if (s > 0) {
-				if (birdY < 0) {
-					bird.getTree().root.worldTransform[13] += .15;
-				}
-				
-				mat4.multiply(
-					bird.getTree().root.worldTransform,
-					mat4.fromTranslation(mat4.create(), vec3.fromValues(s * motionVector[0], 0, s * motionVector[1])),
-					bird.getTree().root.worldTransform
+			if (forwardMovementVelocity > 0) {
+				vec3.set(
+					birdTranslation,
+					forwardMovementVelocity * birdMotionVector[0],
+					0,
+					forwardMovementVelocity * birdMotionVector[1]
 				);
 				
-				bird.getTree().leftUpperWing.localRotation[2] += d1;
-				bird.getTree().rightUpperWing.localRotation[2] += d1;
-				bird.getTree().leftLowerWing.localRotation[2] += d1;
-				bird.getTree().rightLowerWing.localRotation[2] += -d1;
-				
-				if ((bird.getTree().leftUpperWing.localRotation[2] >= (Math.PI * 25 / 180)) || (bird.getTree().leftUpperWing.localRotation[2] <= (Math.PI * -25 / 180))) {
-					d1 *= -1;
+				if (birdY < 0) {
+					birdTranslation[1] = 0.15;
 				}
 			}
 		}
+		
+		if (Math.abs(forwardMovementVelocity) > 0.000001) {
+			bird.getTree().leftUpperWing.localRotation[2] += wingsFlapRotationVelocity;
+			bird.getTree().rightUpperWing.localRotation[2] += wingsFlapRotationVelocity;
+			bird.getTree().leftLowerWing.localRotation[2] += wingsFlapRotationVelocity;
+			bird.getTree().rightLowerWing.localRotation[2] += -wingsFlapRotationVelocity;
+			
+			if ((bird.getTree().leftUpperWing.localRotation[2] >= (Math.PI * 25 / 180)) || (bird.getTree().leftUpperWing.localRotation[2] <= (Math.PI * -25 / 180))) {
+				wingsFlapRotationVelocity *= -1;
+			}
+		}
+		
+		mat4.multiply(
+			bird.getTree().root.worldTransform,
+			mat4.fromTranslation(mat4.create(), birdTranslation),
+			bird.getTree().root.worldTransform
+		);
 	};
 	
 	/**
