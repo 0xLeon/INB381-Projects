@@ -57,6 +57,35 @@ var Assignment2 = (function() {
 	var lastTime = window.performance.now();
 	
 	/**
+	 * Time delta between two animation function calls
+	 *
+	 * @type	{number}
+	 */
+	var elapsedTime = 0;
+	
+	/**
+	 * jQuery object to access the fps value node
+	 *
+	 * @type	{jQuery}
+	 */
+	var $fpsValue = null;
+	
+	/**
+	 * Current frame count between two cycles
+	 *
+	 * @type	{number}
+	 */
+	var framecount = 0;
+	
+	/**
+	 * Current fps value
+	 *
+	 * @type	{number}
+	 */
+	var fps = 0;
+	
+	
+	/**
 	 * Constructor initializing all needed stuff and starting rendering
 	 *
 	 * @param	{jQuery}	canvas		The used canvas node
@@ -69,6 +98,8 @@ var Assignment2 = (function() {
 			
 			initViewMatrices();
 			initWebGLContext();
+			
+			initFps();
 			
 			loadMeshData();
 			loadShaders();
@@ -105,6 +136,18 @@ var Assignment2 = (function() {
 		gl.viewport(0, 0, $canvas.get(0).width, $canvas.get(0).height);
 		gl.enable(WebGLRenderingContext.DEPTH_TEST);
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	};
+	
+	
+	/**
+	 * Initializes the fps measurment
+	 */
+	var initFps = function() {
+		$fpsValue = $('#fps-value');
+		
+		window.setInterval(function() {
+			$fpsValue.text(fps);
+		}, 1000);
 	};
 	
 	
@@ -167,7 +210,15 @@ var Assignment2 = (function() {
 		draw();
 		animate(timestampNow, timestampNow - lastTime);
 		
+		++framecount;
+		elapsedTime += (timestampNow - lastTime);
 		lastTime = timestampNow;
+		
+		if (elapsedTime >= 1000) {
+			fps = framecount;
+			framecount = 0;
+			elapsedTime -= 1000;
+		}
 		
 		// schedule next render
 		window[WebGLHelper.requestAnimationFrame](render);
