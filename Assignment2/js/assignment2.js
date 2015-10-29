@@ -129,6 +129,28 @@ var Assignment2 = (function() {
 	var useBasicMaterial = false;
 	
 	/**
+	 * jQuery object to access the sound checkbox
+	 *
+	 * @type	{jQuery}
+	 */
+	var $soundSwitch = null;
+	
+	/**
+	 * Current sound state
+	 *
+	 * @type	{boolean}
+	 */
+	var enableSound = false;
+	
+	/**
+	 * 
+	 * 
+	 * @type	{Audio}
+	 */
+	var birdFlapSound = new Audio('./sound/WingFlapB.wav');
+	
+	
+	/**
 	 * Constructor initializing all needed stuff and starting rendering
 	 *
 	 * @param	{jQuery}	canvas		The used canvas node
@@ -144,7 +166,7 @@ var Assignment2 = (function() {
 			initKeyState();
 			
 			initFps();
-			initLightingSwitches();
+			initConfigSwitches();
 			
 			loadMeshData();
 			loadShaders();
@@ -236,7 +258,7 @@ var Assignment2 = (function() {
 		}, 1000);
 	};
 	
-	var initLightingSwitches = function() {
+	var initConfigSwitches = function() {
 		$lightingSwitch = $('#enable-lighting');
 		$lightingSwitch.on('change', function() {
 			doLighting = $(this).is(':checked');
@@ -257,6 +279,12 @@ var Assignment2 = (function() {
 			gl.uniform1i(shadersVariables.useBasicMaterial, (0 + useBasicMaterial));
 		});
 		useBasicMaterial = doLighting && $basicMaterialSwitch.is(':checked');
+		
+		$soundSwitch = $('#enable-sound');
+		$soundSwitch.on('change', function() {
+			enableSound = $(this).is(':checked');
+		});
+		enableSound = $soundSwitch.is(':checked');
 	};
 	
 	
@@ -498,6 +526,10 @@ var Assignment2 = (function() {
 			
 			if ((bird.getTree().leftUpperWing.localRotation[2] >= (Math.PI * 25 / 180)) || (bird.getTree().leftUpperWing.localRotation[2] <= (Math.PI * -25 / 180))) {
 				wingsFlapRotationVelocity *= -1;
+				
+				if (enableSound && (wingsFlapRotationVelocity < 0)) {
+					birdFlapSound.play();
+				}
 			}
 		}
 		
