@@ -68,10 +68,36 @@ var ObjectLoader = (function() {
 						normalsPerVertex.push(
 							(normals[(parseInt(f1[2]) - 1)]));
 						normalsPerVertex.push(
-							(normals[(parseInt(f2[2]) - 1)]));
+							(normals[(parseInt(f1[2]) - 1)]));
+						normalsPerVertex.push(
+							(normals[(parseInt(f1[2]) - 1)]));
+						
+						normalsPerVertex.push(
+							(normals[(parseInt(f1[2]) - 1)]));
+						normalsPerVertex.push(
+							(normals[(parseInt(f1[2]) - 1)]));
+						normalsPerVertex.push(
+							(normals[(parseInt(f1[2]) - 1)]));
+						
+						normalsPerVertex.push(
+							(normals[(parseInt(f1[2]) - 1)]));
+						normalsPerVertex.push(
+							(normals[(parseInt(f1[2]) - 1)]));
+						normalsPerVertex.push(
+							(normals[(parseInt(f1[2]) - 1)]));
+						
+						
+						/*
+						normalsPerVertex.push(
+							(normals[(parseInt(f1[2]) - 1)])
+						);
+						normalsPerVertex.push(
+							(normals[(parseInt(f2[2]) - 1)])
+						);
 						normalsPerVertex.push(
 							(normals[(parseInt(f3[2]) - 1)])
 						);
+						*/
 						
 						break;
 				}
