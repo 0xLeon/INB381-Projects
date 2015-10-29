@@ -209,9 +209,9 @@ var Bird = (function() {
 		var localRotationZ = mat4.fromZRotation(mat4.create(), node.localRotation[2]);
 		
 		// accumulate local transformations
-		mat4.multiply(localTransform, localRotationX, localTransform);
-		mat4.multiply(localTransform, localRotationY, localTransform);
 		mat4.multiply(localTransform, localRotationZ, localTransform);
+		mat4.multiply(localTransform, localRotationY, localTransform);
+		mat4.multiply(localTransform, localRotationX, localTransform);
 		mat4.multiply(localTransform, localTranslation, localTransform);
 		
 		// apply local and world transformations of this node to the current view
