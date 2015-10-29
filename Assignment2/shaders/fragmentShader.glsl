@@ -1,6 +1,7 @@
 precision mediump float;
 
 uniform int doLighting;
+uniform int useBasicMaterial;
 
 varying vec4 fColor;
 varying vec2 fSeed;
@@ -24,6 +25,12 @@ highp float rand(vec2 seed) {
 }
 
 void main() {
+	vec4 inputMatDiffuseColor = fColor;
+	
+	if (1 == useBasicMaterial) {
+		inputMatDiffuseColor = vec4(0.7, 0.7, 0.7, 1.0);
+	}
+	
 	if (1 == doLighting) {
 		vec3 normal = normalize(fNormalInterp); 
 		vec3 lightDir = normalize(lightPos - fVertPos);
@@ -49,12 +56,12 @@ void main() {
 			// specular *= 0.0;
 		}
 		
-		gl_FragColor = vec4(lambertian * diffuseColor + specular * specColor, 1.0);
+		gl_FragColor = vec4(lambertian * vec3(inputMatDiffuseColor.xyz) + specular * specColor, 1.0);
 	}
 	else {
 		// highp float color = rand(fSeed);
 		// gl_FragColor = vec4(color, color, color, 1.0);
 		
-		gl_FragColor = fColor;
+		gl_FragColor = inputMatDiffuseColor;
 	}
 }

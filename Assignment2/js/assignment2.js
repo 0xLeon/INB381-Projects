@@ -43,7 +43,8 @@ var Assignment2 = (function() {
 		viewMatrix:		null,
 		normalMatrix:		null,
 		mode:			null,
-		doLighting:		null
+		doLighting:		null,
+		useBasicMaterial:	null
 	};
 	
 	var program = null;
@@ -116,6 +117,16 @@ var Assignment2 = (function() {
 	 */
 	var $lightingSwitch = null;
 	
+	var doLighting = false;
+	
+	/**
+	 *
+	 *
+	 * @type	{jQuery}
+	 */
+	var $basicMaterialSwitch = null;
+	
+	var useBasicMaterial = false;
 	
 	/**
 	 * Constructor initializing all needed stuff and starting rendering
@@ -133,7 +144,7 @@ var Assignment2 = (function() {
 			initKeyState();
 			
 			initFps();
-			initLightingSwitch();
+			initLightingSwitches();
 			
 			loadMeshData();
 			loadShaders();
@@ -225,12 +236,27 @@ var Assignment2 = (function() {
 		}, 1000);
 	};
 	
-	var initLightingSwitch = function() {
+	var initLightingSwitches = function() {
 		$lightingSwitch = $('#enable-lighting');
-		
 		$lightingSwitch.on('change', function() {
-			gl.uniform1i(shadersVariables.doLighting, $(this).is(':checked'));
+			doLighting = $(this).is(':checked');
+			useBasicMaterial = doLighting && $basicMaterialSwitch.is(':checked');
+			
+			$basicMaterialSwitch.prop('disabled', !doLighting);
+			
+			gl.uniform1i(shadersVariables.doLighting, (0 + doLighting));
+			gl.uniform1i(shadersVariables.useBasicMaterial, (0 + useBasicMaterial));
 		});
+		doLighting = $lightingSwitch.is(':checked');
+		
+		$basicMaterialSwitch = $('#basic-material');
+		$basicMaterialSwitch.prop('disabled', !doLighting);
+		$basicMaterialSwitch.on('change', function() {
+			useBasicMaterial = doLighting && $(this).is(':checked');
+			
+			gl.uniform1i(shadersVariables.useBasicMaterial, (0 + useBasicMaterial));
+		});
+		useBasicMaterial = doLighting && $basicMaterialSwitch.is(':checked');
 	};
 	
 	
@@ -279,6 +305,7 @@ var Assignment2 = (function() {
 		
 		shadersVariables.mode = gl.getUniformLocation(program, 'mode');
 		shadersVariables.doLighting = gl.getUniformLocation(program, 'doLighting');
+		shadersVariables.useBasicMaterial = gl.getUniformLocation(program, 'useBasicMaterial');
 		
 		gl.enableVertexAttribArray(shadersVariables.vPosition);
 		gl.enableVertexAttribArray(shadersVariables.vNormal);
@@ -293,7 +320,8 @@ var Assignment2 = (function() {
 		gl.useProgram(program);
 		gl.uniformMatrix4fv(shadersVariables.projectionMatrix, false, projectionMatrix);
 		gl.uniformMatrix4fv(shadersVariables.viewMatrix, false, viewMatrix);
-		gl.uniform1i(shadersVariables.doLighting, $lightingSwitch.is(':checked'));
+		gl.uniform1i(shadersVariables.doLighting, (0 + $lightingSwitch.is(':checked')));
+		gl.uniform1i(shadersVariables.useBasicMaterial, (0 + $basicMaterialSwitch.is(':checked')));
 		
 		window[WebGLHelper.requestAnimationFrame](render);
 	};
