@@ -46,11 +46,31 @@ var Assignment2 = (function() {
 	
 	var program = null;
 	
+	var keyState = {
+		a:	false,
+		d:	false,
+		s:	false,
+		x:	false,
+		z:	false
+	};
+	
 	/**
 	 *
 	 * @type {Bird}
 	 */
 	var bird = null;
+	
+	var birdStates = {
+		crashing:	false,
+		spiraling:	false,
+		sliding:	false
+	};
+	
+	var wingsFlapRotationVelocity = 0.04375;
+	var forwardMovementVelocity = 0.2;
+	var spiralRotationVelocity = 0;
+	
+	var groundObj = null;
 	
 	/**
 	 * Timestamp to keep track of elapsed time for animation
@@ -88,21 +108,6 @@ var Assignment2 = (function() {
 	var fps = 0;
 	
 	
-	var keyState = {
-		a:	false,
-		d:	false,
-		s:	false,
-		x:	false,
-		z:	false
-	};
-	
-	var birdStates = {
-		crashing:	false,
-		spiraling:	false,
-		sliding:	false
-	};
-	
-	var groundObj = null;
 	
 	/**
 	 * Constructor initializing all needed stuff and starting rendering
@@ -312,11 +317,6 @@ var Assignment2 = (function() {
 		gl.drawElements(WebGLRenderingContext.TRIANGLES, groundObj.meshData.vertexIndices.length * 3, WebGLRenderingContext.UNSIGNED_SHORT, 0);
 		
 	};
-	
-	
-	var wingsFlapRotationVelocity = 0.04375;
-	var forwardMovementVelocity = 0.2;
-	var spiralRotationVelocity = 0;
 	
 	/**
 	 * Animate all animating objects
