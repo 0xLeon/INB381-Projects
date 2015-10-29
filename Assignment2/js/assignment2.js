@@ -217,7 +217,7 @@ var Assignment2 = (function() {
 	 * 
 	 * @type	{Audio}
 	 */
-	var birdFlapSound = new Audio('./sound/WingFlapB.wav');
+	var birdFlapSound = new Audio('./sound/WingFlapA.wav');
 	
 	
 	/**
