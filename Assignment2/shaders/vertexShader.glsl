@@ -3,11 +3,15 @@ attribute vec3 vNormal;
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
+uniform mat4 normalMatrix;
 
 uniform int mode;
 
 varying vec4 fColor;
 varying vec2 fSeed;
+
+varying vec3 fNormalInterp;
+varying vec3 fVertPos;
 
 
 highp float rand(vec2 seed) {
@@ -22,24 +26,31 @@ highp float rand(vec2 seed) {
 }
 
 void renderBird(void) {
-	gl_Position = projectionMatrix * (viewMatrix * vec4(vPosition.xyz, 1.0));
+	vec4 vertPos = viewMatrix * vec4(vPosition.xyz, 1.0);
+	
+	gl_Position = projectionMatrix * vertPos;
+	fVertPos = vec3(vertPos.xyz) / vertPos.w;
 	
 	highp float colorR = 0.7 * rand(vPosition.xy);
 	highp float colorG = 0.7 * rand(vPosition.xz);
 	highp float colorB = 0.7 * rand(vPosition.yz);
 	
 	fColor = vec4(colorR, colorG, colorB, 1.0);
-	// fSeed = vec2(vPosition.xy);
+	fSeed = vec2(vPosition.xy);
 }
 
 void renderFloor(void) {
-	gl_Position = projectionMatrix * (viewMatrix * vec4(vPosition.x, vPosition.y - 10.0, vPosition.z, 1.0));
+	vec4 vertPos =  viewMatrix * vec4(vPosition.x, vPosition.y - 10.0, vPosition.z, 1.0);
+	
+	gl_Position = projectionMatrix * vertPos;
+	fVertPos = vec3(vertPos.xyz) / vertPos.w;
+	
 	highp float colorR = 0.7 * rand(vPosition.xy);
 	highp float colorG = 0.7 * rand(vPosition.xz);
 	highp float colorB = 0.7 * rand(vPosition.yz);
 	
 	fColor = vec4(colorR, colorG, colorB, 1.0);
-	// fSeed = vec2(vPosition.xy);
+	fSeed = vec2(vPosition.xy);
 }
 
 void main() {
@@ -49,4 +60,6 @@ void main() {
 	else if (1 == mode) {
 		renderFloor();
 	}
+	
+	fNormalInterp = vec3((normalMatrix * vec4(vNormal, 0.0)));
 }

@@ -21,3 +21,9 @@ fieldset {
 	display: inline-block;
 	min-width: 210px;
 }
+
+fieldset > label {
+	display: inline-block;
+	position: relative;
+	min-width: 22px;
+}

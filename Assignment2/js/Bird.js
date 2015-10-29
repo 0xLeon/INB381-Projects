@@ -156,7 +156,12 @@ var Bird = (function() {
 			return;
 		}
 		
+		var normalMatrix = mat4.create();
+		mat4.invert(normalMatrix, this.caller.getModelViewMatrix());
+		mat4.transpose(normalMatrix, normalMatrix);
+		
 		this.gl.uniformMatrix4fv(this.caller.getShaderVariable('viewMatrix'), false, this.caller.getModelViewMatrix());
+		this.gl.uniformMatrix4fv(this.caller.getShaderVariable('normalMatrix'), false, normalMatrix);
 		this.gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, node.glObject.buffers.normalsBuffer);
 		this.gl.vertexAttribPointer(this.caller.getShaderVariable('vNormal'), 3, WebGLRenderingContext.FLOAT, false, 0, 0);
 		this.gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, node.glObject.buffers.verticesBuffer);

@@ -41,7 +41,9 @@ var Assignment2 = (function() {
 		vNormal:		null,
 		projectionMatrix:	null,
 		viewMatrix:		null,
-		mode:			null
+		normalMatrix:		null,
+		mode:			null,
+		doLighting:		null
 	};
 	
 	var program = null;
@@ -107,6 +109,12 @@ var Assignment2 = (function() {
 	 */
 	var fps = 0;
 	
+	/**
+	 * 
+	 * 
+	 * @type	{jQuery}
+	 */
+	var $lightingSwitch = null;
 	
 	
 	/**
@@ -125,6 +133,7 @@ var Assignment2 = (function() {
 			initKeyState();
 			
 			initFps();
+			initLightingSwitch();
 			
 			loadMeshData();
 			loadShaders();
@@ -216,6 +225,14 @@ var Assignment2 = (function() {
 		}, 1000);
 	};
 	
+	var initLightingSwitch = function() {
+		$lightingSwitch = $('#enable-lighting');
+		
+		$lightingSwitch.on('change', function() {
+			gl.uniform1i(shadersVariables.doLighting, $(this).is(':checked'));
+		});
+	};
+	
 	
 	/**
 	 * Load mesh data objects by HTTP for monkey and sphere
@@ -258,8 +275,10 @@ var Assignment2 = (function() {
 		
 		shadersVariables.projectionMatrix = gl.getUniformLocation(program, 'projectionMatrix');
 		shadersVariables.viewMatrix = gl.getUniformLocation(program, 'viewMatrix');
+		shadersVariables.normalMatrix = gl.getUniformLocation(program, 'normalMatrix');
 		
 		shadersVariables.mode = gl.getUniformLocation(program, 'mode');
+		shadersVariables.doLighting = gl.getUniformLocation(program, 'doLighting');
 		
 		gl.enableVertexAttribArray(shadersVariables.vPosition);
 		gl.enableVertexAttribArray(shadersVariables.vNormal);
@@ -274,6 +293,7 @@ var Assignment2 = (function() {
 		gl.useProgram(program);
 		gl.uniformMatrix4fv(shadersVariables.projectionMatrix, false, projectionMatrix);
 		gl.uniformMatrix4fv(shadersVariables.viewMatrix, false, viewMatrix);
+		gl.uniform1i(shadersVariables.doLighting, $lightingSwitch.is(':checked'));
 		
 		window[WebGLHelper.requestAnimationFrame](render);
 	};
@@ -309,13 +329,19 @@ var Assignment2 = (function() {
 		
 		bird.render();
 		
+		var normalMatrix = mat4.create();
+		mat4.invert(normalMatrix, viewMatrix);
+		mat4.transpose(normalMatrix, normalMatrix);
+		
 		gl.uniform1i(shadersVariables.mode, 1);
 		gl.uniformMatrix4fv(shadersVariables.viewMatrix, false, viewMatrix);
+		gl.uniformMatrix4fv(shadersVariables.normalMatrix, false, normalMatrix);
+		gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, groundObj.buffers.normalsBuffer);
+		gl.vertexAttribPointer(shadersVariables.vNormal, 3, WebGLRenderingContext.FLOAT, false, 0, 0);
 		gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, groundObj.buffers.verticesBuffer);
 		gl.vertexAttribPointer(shadersVariables.vPosition, 3, WebGLRenderingContext.FLOAT, false, 0, 0);
 		gl.bindBuffer(WebGLRenderingContext.ELEMENT_ARRAY_BUFFER, groundObj.buffers.vertexIndicesBuffer);
 		gl.drawElements(WebGLRenderingContext.TRIANGLES, groundObj.meshData.vertexIndices.length * 3, WebGLRenderingContext.UNSIGNED_SHORT, 0);
-		
 	};
 	
 	/**
