@@ -13,7 +13,7 @@ varying vec2 fSeed;
 varying vec3 fNormalInterp;
 varying vec3 fVertPos;
 
-
+// helper function for "random" value generation
 highp float rand(vec2 seed) {
 	highp float a = 12.9898;
 	highp float b = 78.233;
@@ -25,6 +25,7 @@ highp float rand(vec2 seed) {
 	return fract(sin(sn) * c);
 }
 
+// bird rendering function
 void renderBird(void) {
 	vec4 vertPos = viewMatrix * vec4(vPosition.xyz, 1.0);
 	
@@ -39,6 +40,7 @@ void renderBird(void) {
 	fSeed = vec2(vPosition.xy);
 }
 
+// ground rendering function
 void renderFloor(void) {
 	vec4 vertPos =  viewMatrix * vec4(vPosition.x, vPosition.y - 10.0, vPosition.z, 1.0);
 	
@@ -61,5 +63,6 @@ void main() {
 		renderFloor();
 	}
 	
+	// calculate normal for lighting
 	fNormalInterp = vec3((normalMatrix * vec4(vNormal, 0.0)));
 }

@@ -26,16 +26,31 @@ var Assignment2 = (function() {
 	 */
 	var viewMatrix = mat4.create();
 	
+	/**
+	 * Object keeping track of loading status of other assets
+	 * 
+	 * @type	{Object}
+	 */
 	var loadingStatus = {
 		shaders:	false,
 		mesh:		false
 	};
 	
+	/**
+	 * Object containing all WebGL shaders for this application
+	 * 
+	 * @type	{Object}
+	 */
 	var shaders = {
 		vertex:		null,
 		fragment:	null
 	};
 	
+	/**
+	 * Object containing all WebGL shader variables pointers for the used shaders
+	 * 
+	 * @type	{Object}
+	 */
 	var shadersVariables = {
 		vPosition:		null,
 		vNormal:		null,
@@ -47,8 +62,18 @@ var Assignment2 = (function() {
 		useBasicMaterial:	null
 	};
 	
+	/**
+	 * The WebGL shader program used for this application
+	 * 
+	 * @type	{Object}
+	 */
 	var program = null;
 	
+	/**
+	 * Object keeping track of the keyboard state
+	 * 
+	 * @type	{Object}
+	 */
 	var keyState = {
 		a:	false,
 		d:	false,
@@ -63,17 +88,50 @@ var Assignment2 = (function() {
 	 */
 	var bird = null;
 	
+	/**
+	 * Object keeping track of the bird states
+	 * 
+	 * @type	{Object}
+	 */
 	var birdStates = {
 		crashing:	false,
 		spiraling:	false,
 		sliding:	false
 	};
 	
+	/**
+	 * The rotation speed for the wing flapping
+	 * 
+	 * @type	{number}
+	 */
 	var wingsFlapRotationVelocity = 0.04375;
+	
+	/**
+	 * The rotation speed for the neck, head and tail flappng
+	 * 
+	 * @type	{number}
+	 */
 	var bodyFlapRotationVelocity = 0.021875;
+	
+	/**
+	 * The movement speed for xz movement
+	 * 
+	 * @type	{number}
+	 */
 	var forwardMovementVelocity = 0.2;
+	
+	/**
+	 * The radial velocity for the spiral path
+	 * 
+	 * @type	{number}
+	 */
 	var spiralRotationVelocity = 0;
 	
+	/**
+	 * The WebGL graphics object for the ground
+	 * 
+	 * @type	{WebGLGraphicsObject}
+	 */
 	var groundObj = null;
 	
 	/**
@@ -112,21 +170,31 @@ var Assignment2 = (function() {
 	var fps = 0;
 	
 	/**
-	 * 
+	 * jQuery object to access the lighting switch
 	 * 
 	 * @type	{jQuery}
 	 */
 	var $lightingSwitch = null;
 	
+	/**
+	 * Current lighting state
+	 * 
+	 * @type	{boolean}
+	 */
 	var doLighting = false;
 	
 	/**
-	 *
+	 * jQuery object to access the material switch
 	 *
 	 * @type	{jQuery}
 	 */
 	var $basicMaterialSwitch = null;
 	
+	/**
+	 * Current material state
+	 * 
+	 * @type	{boolean}
+	 */
 	var useBasicMaterial = false;
 	
 	/**
@@ -144,7 +212,7 @@ var Assignment2 = (function() {
 	var enableSound = false;
 	
 	/**
-	 * 
+	 * Sound object used for the flapping sound
 	 * 
 	 * @type	{Audio}
 	 */
@@ -206,6 +274,9 @@ var Assignment2 = (function() {
 		gl.clearColor(0.5, 0.5, 0.5, 1.0);
 	};
 	
+	/**
+	 * Initialized the keyboard event listeners
+	 */
 	var initKeyState = function() {
 		$(document).on('keydown', function(event) {
 			switch (event.keyCode) {
@@ -259,6 +330,9 @@ var Assignment2 = (function() {
 		}, 1000);
 	};
 	
+	/**
+	 * Initializes the DOM checkbox event listeners and get's their initial state
+	 */
 	var initConfigSwitches = function() {
 		$lightingSwitch = $('#enable-lighting');
 		$lightingSwitch.on('change', function() {
@@ -290,7 +364,7 @@ var Assignment2 = (function() {
 	
 	
 	/**
-	 * Load mesh data objects by HTTP for monkey and sphere
+	 * Load mesh data objects by HTTP for bird and ground
 	 */
 	var loadMeshData = function() {
 		bird = new Bird({
@@ -342,7 +416,7 @@ var Assignment2 = (function() {
 	
 	
 	/**
-	 * Push view matrices to shaders and start render loop
+	 * Push basic config to shaders and start render loop
 	 */
 	var startWebGL = function() {
 		gl.bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, null);
@@ -364,6 +438,7 @@ var Assignment2 = (function() {
 		draw();
 		animate(timestampNow, timestampNow - lastTime);
 		
+		// handle fps stats
 		++framecount;
 		elapsedTime += (timestampNow - lastTime);
 		lastTime = timestampNow;
@@ -384,8 +459,11 @@ var Assignment2 = (function() {
 	var draw = function() {
 		gl.clear(WebGLRenderingContext.DEPTH_BUFFER_BIT | WebGLRenderingContext.COLOR_BUFFER_BIT);
 		
+		// render bird
 		bird.render();
 		
+		
+		// render ground
 		var normalMatrix = mat4.create();
 		mat4.invert(normalMatrix, viewMatrix);
 		mat4.transpose(normalMatrix, normalMatrix);
@@ -408,13 +486,18 @@ var Assignment2 = (function() {
 	 * @param	{number}	deltaTime	High resolution timestamp delta between now and last animation cycle
 	 */
 	var animate = function(timestampNow, deltaTime) {
+		// current bird position
 		var birdX = bird.getTree().root.worldTransform[12];
 		var birdY = bird.getTree().root.worldTransform[13];
 		var birdZ = bird.getTree().root.worldTransform[14];
 		
+		// bird movement vector based on current orientation
 		var birdMotionVector = vec2.fromValues(Math.sin(bird.getTree().body.localRotation[1]), Math.cos(bird.getTree().body.localRotation[1]));
+		
+		// amount to translate bird in this animation step
 		var birdTranslation = vec3.create();
 		
+		// check for state changes if there is no special state now
 		if ((birdY > -7) && !(birdStates.crashing || birdStates.spiraling)) {
 			if (keyState.z) {
 				birdStates.crashing = true;
@@ -427,17 +510,23 @@ var Assignment2 = (function() {
 		}
 		
 		if (birdStates.crashing) {
+			// handle crashing state
+			
 			vec3.set(birdTranslation, 0, -0.5, 0);
 			
 			if (birdY < -7) {
+				// leave state if bird is on the ground
 				birdStates.crashing = false;
 				forwardMovementVelocity = 0;
 			}
 		}
 		else if (birdStates.spiraling) {
+			// handle spiraling state
+			
 			spiralRotationVelocity += 0.0007;
 			
 			if (birdY > -7) {
+				// in spiraling, not slinding if bird is above the ground
 				forwardMovementVelocity += 0.0004;
 				
 				bird.getTree().body.localRotation[1] += spiralRotationVelocity;
@@ -448,6 +537,7 @@ var Assignment2 = (function() {
 				birdTranslation[1] = -0.02;
 			}
 			else {
+				// bird is on the ground, no spiraling, but sliding
 				forwardMovementVelocity -= 0.005;
 				
 				if (forwardMovementVelocity <= 0) {
@@ -463,16 +553,21 @@ var Assignment2 = (function() {
 			);
 			
 			if (Math.abs(forwardMovementVelocity) < 0.000001) {
+				// leave state if there is no more movement (sliding)
 				birdStates.spiraling = false;
 				forwardMovementVelocity = 0;
 			}
 		}
 		else {
+			// normal state, check for key states first
+			
 			if (keyState.s) {
+				// start moveing after stopping
 				forwardMovementVelocity = 0.2;
 			}
 			
 			if (keyState.a) {
+				// turn left
 				bird.getTree().body.localRotation[1] += 0.035;
 				
 				birdMotionVector[0] = Math.sin(bird.getTree().body.localRotation[1]);
@@ -480,12 +575,14 @@ var Assignment2 = (function() {
 			}
 			
 			if (keyState.d) {
+				// turn right
 				bird.getTree().body.localRotation[1] -= 0.035;
 				
 				birdMotionVector[0] = Math.sin(bird.getTree().body.localRotation[1]);
 				birdMotionVector[1] = Math.cos(bird.getTree().body.localRotation[1]);
 			}
 			
+			// checl for left and right limits
 			if ((Math.abs(birdX) > (.475 * (birdZ + 20) + 7))) {
 				birdMotionVector[1] = 0;
 				
@@ -499,12 +596,14 @@ var Assignment2 = (function() {
 				bird.getTree().body.localRotation[1] = Math.atan2(birdMotionVector[0], birdMotionVector[1]);
 			}
 			
+			// check for front and back limits
 			if ((birdZ <= -20) || (birdZ >= 75)) {
 				birdMotionVector[1] *= -1;
 				
 				bird.getTree().body.localRotation[1] = Math.atan2(birdMotionVector[0], birdMotionVector[1]);
 			}
 			
+			// move if the forward velocity is greater than zero
 			if (forwardMovementVelocity > 0) {
 				vec3.set(
 					birdTranslation,
@@ -519,6 +618,7 @@ var Assignment2 = (function() {
 			}
 		}
 		
+		// flap, if the bird if moving
 		if (Math.abs(forwardMovementVelocity) > 0.000001) {
 			bird.getTree().leftUpperWing.localRotation[2] += wingsFlapRotationVelocity;
 			bird.getTree().rightUpperWing.localRotation[2] += wingsFlapRotationVelocity;
@@ -529,16 +629,19 @@ var Assignment2 = (function() {
 			bird.getTree().neck.localRotation[0] -= bodyFlapRotationVelocity;
 			bird.getTree().head.localRotation[0] += bodyFlapRotationVelocity;
 			
+			// check for joint limits
 			if ((bird.getTree().leftUpperWing.localRotation[2] >= (Math.PI * 25 / 180)) || (bird.getTree().leftUpperWing.localRotation[2] <= (Math.PI * -25 / 180))) {
 				wingsFlapRotationVelocity *= -1;
 				bodyFlapRotationVelocity *= -1;
 				
 				if (enableSound && (wingsFlapRotationVelocity < 0)) {
+					// play sound if flapping downwards
 					birdFlapSound.play();
 				}
 			}
 		}
 		
+		// move the bird
 		mat4.multiply(
 			bird.getTree().root.worldTransform,
 			mat4.fromTranslation(mat4.create(), birdTranslation),
@@ -547,17 +650,30 @@ var Assignment2 = (function() {
 	};
 	
 	/**
-	 *
-	 * @returns	{WebGLRenderingContext}
+	 * Returns the canvas' WebGL context
+	 * 
+	 * @returns	{WebGLRenderingContext}		The canvas' WebGL context
 	 */
 	var getGL = function() {
 		return gl;
 	};
 	
+	/**
+	 * Returns the current object view matrix
+	 * 
+	 * @returns	{mat4}				The current object view matrix
+	 */
 	var getModelViewMatrix = function() {
 		return viewMatrix;
 	};
 	
+	/**
+	 * Returns the pointer ID of the given shader variable name in the current program.
+	 * If no variable with that name exists, returns undefined.
+	 * 
+	 * @param	{string}	name		Te name of the shader variable
+	 * @returns	{number}			The shader variable pointer ID or undefined
+	 */
 	var getShaderVariable = function(name) {
 		return shadersVariables[name];
 	};

@@ -9,10 +9,12 @@ varying vec2 fSeed;
 varying vec3 fNormalInterp;
 varying vec3 fVertPos;
 
+// lighting variables
 const vec3 lightPos = vec3(0.0, 10.0, 0.0);
 const vec3 diffuseColor = vec3(0.5, 0.5, 0.5);
 const vec3 specColor = vec3(1.0, 1.0, 1.0);
 
+// helper function for "random" value generation
 highp float rand(vec2 seed) {
 	highp float a = 12.9898;
 	highp float b = 78.233;
@@ -25,6 +27,7 @@ highp float rand(vec2 seed) {
 }
 
 void main() {
+	// use color from vertex as default
 	vec4 inputMatDiffuseColor = fColor;
 	
 	if (1 == useBasicMaterial) {
