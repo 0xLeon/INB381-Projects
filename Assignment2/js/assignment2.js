@@ -171,7 +171,7 @@ var Assignment2 = (function() {
 	 */
 	var initViewMatrices = function() {
 		mat4.perspective(projectionMatrix, Math.PI / 4, $canvas.get(0).width / $canvas.get(0).height, 0.1, 1000);
-		mat4.lookAt(viewMatrix, vec3.fromValues(0, 5, -30), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
+		mat4.lookAt(viewMatrix, vec3.fromValues(0, 5, -30), vec3.fromValues(0, 0, -5), vec3.fromValues(0, 1, 0));
 	};
 	
 	/**
@@ -457,7 +457,7 @@ var Assignment2 = (function() {
 				birdMotionVector[1] = Math.cos(bird.getTree().body.localRotation[1]);
 			}
 			
-			if ((Math.abs(birdX) > (.675 * (birdZ + 20) + 5))) {
+			if ((Math.abs(birdX) > (.475 * (birdZ + 20) + 7))) {
 				birdMotionVector[1] = 0;
 				
 				if (birdX < 0) {
@@ -470,7 +470,7 @@ var Assignment2 = (function() {
 				bird.getTree().body.localRotation[1] = Math.atan2(birdMotionVector[0], birdMotionVector[1]);
 			}
 			
-			if ((birdZ <= -20) || (birdZ >= 50)) {
+			if ((birdZ <= -20) || (birdZ >= 75)) {
 				birdMotionVector[1] *= -1;
 				
 				bird.getTree().body.localRotation[1] = Math.atan2(birdMotionVector[0], birdMotionVector[1]);
