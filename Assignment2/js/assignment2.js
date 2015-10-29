@@ -79,6 +79,7 @@ var Assignment2 = (function() {
 		d:	false,
 		s:	false,
 		x:	false,
+		y:	false,
 		z:	false
 	};
 	
@@ -96,7 +97,7 @@ var Assignment2 = (function() {
 	var birdStates = {
 		crashing:	false,
 		spiraling:	false,
-		sliding:	false
+		looping:	false
 	};
 	
 	/**
@@ -292,6 +293,9 @@ var Assignment2 = (function() {
 				case 88:
 					keyState.x = true;
 					break;
+				case 89:
+					keyState.y = true;
+					break;
 				case 90:
 					keyState.z = true;
 					break;
@@ -310,6 +314,9 @@ var Assignment2 = (function() {
 					break;
 				case 88:
 					keyState.x = false;
+					break;
+				case 89:
+					keyState.y = false;
 					break;
 				case 90:
 					keyState.z = false;
@@ -498,13 +505,17 @@ var Assignment2 = (function() {
 		var birdTranslation = vec3.create();
 		
 		// check for state changes if there is no special state now
-		if ((birdY > -7) && !(birdStates.crashing || birdStates.spiraling)) {
+		if ((birdY > -7) && !(birdStates.crashing || birdStates.spiraling || birdStates.looping)) {
 			if (keyState.z) {
 				birdStates.crashing = true;
 			}
 			else if (keyState.x) {
 				birdStates.spiraling = true;
 				spiralRotationVelocity = 0;
+				forwardMovementVelocity = 0.2;
+			}
+			else if (keyState.y) {
+				birdStates.looping = true;
 				forwardMovementVelocity = 0.2;
 			}
 		}
@@ -559,7 +570,16 @@ var Assignment2 = (function() {
 			}
 		}
 		else {
-			// normal state, check for key states first
+			// looping state allows normal steering
+			if (birdStates.looping) {
+				bird.getTree().body.localRotation[2] -= 0.1;
+				
+				if (Math.abs(bird.getTree().body.localRotation[2]) % (Math.PI * 2) < 0.1) {
+					bird.getTree().body.localRotation[2] = 0;
+					forwardMovementVelocity = 0.2;
+					birdStates.looping = false;
+				}
+			}
 			
 			if (keyState.s) {
 				// start moveing after stopping
@@ -619,7 +639,7 @@ var Assignment2 = (function() {
 		}
 		
 		// flap, if the bird if moving
-		if (Math.abs(forwardMovementVelocity) > 0.000001) {
+		if (!birdStates.looping && (Math.abs(forwardMovementVelocity) > 0.000001)) {
 			bird.getTree().leftUpperWing.localRotation[2] += wingsFlapRotationVelocity;
 			bird.getTree().rightUpperWing.localRotation[2] += wingsFlapRotationVelocity;
 			bird.getTree().leftLowerWing.localRotation[2] += wingsFlapRotationVelocity;
