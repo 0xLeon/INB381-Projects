@@ -70,6 +70,7 @@ var Assignment2 = (function() {
 	};
 	
 	var wingsFlapRotationVelocity = 0.04375;
+	var bodyFlapRotationVelocity = 0.021875;
 	var forwardMovementVelocity = 0.2;
 	var spiralRotationVelocity = 0;
 	
@@ -524,8 +525,13 @@ var Assignment2 = (function() {
 			bird.getTree().leftLowerWing.localRotation[2] += wingsFlapRotationVelocity;
 			bird.getTree().rightLowerWing.localRotation[2] += -wingsFlapRotationVelocity;
 			
+			bird.getTree().tail.localRotation[0] += bodyFlapRotationVelocity;
+			bird.getTree().neck.localRotation[0] -= bodyFlapRotationVelocity;
+			bird.getTree().head.localRotation[0] += bodyFlapRotationVelocity;
+			
 			if ((bird.getTree().leftUpperWing.localRotation[2] >= (Math.PI * 25 / 180)) || (bird.getTree().leftUpperWing.localRotation[2] <= (Math.PI * -25 / 180))) {
 				wingsFlapRotationVelocity *= -1;
+				bodyFlapRotationVelocity *= -1;
 				
 				if (enableSound && (wingsFlapRotationVelocity < 0)) {
 					birdFlapSound.play();
